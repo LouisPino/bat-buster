@@ -9,11 +9,13 @@ Louis Pino
 
 
 ## Pseudocode
-
+Variables---
 totalLives = 3
-speed = 200ms
+guySpeed = 200ms
+batSpeed = 200ms
 kills = 0
 batCount = 0
+
 
 enemy class - 
 health: 10
@@ -22,10 +24,11 @@ direction: [Random(1-5)], [Random(1-5)] - represents x and y movement speed in p
 reverse direction()
 touchGuy()
 movebat()
+die()
 
 
 
-
+functions---
 init(){
     lives = totalLives
 
@@ -40,13 +43,13 @@ setInterval(move, speed)
 decrementHealth() - 
 
 
-reverse direction() - If touching top or bottom, ydirection *= -1, if touching left opr right wall, x direction *= -1.
+reverse direction() - If touching top or bottom, ydirection *= -1, if touching left or right wall, x direction *= -1.
 
 move() -
-if W held down, y+=1px
-if S held down, y-=1px
-if A held down, x+=1px
-if D held down, x-=1px
+if W held down && ypos<maxHeight, y+=1px
+if S held down && ypos>minHeight, y-=1px
+if A held down && xpos>minWidth, x+=1px
+if D held down && xpos<maxWidth, x-=1px
 renderGuy()
 
 
@@ -105,4 +108,9 @@ renderLives(){
     setInterval(function(){
     yPos += direction[1]
     xPos += direction[0]}, 200)
+ }
+ 
+ die(){
+    if (this.health <=0){this.remove??}
+    bat[this] = null
  }
