@@ -16,14 +16,14 @@ header {
 .subheader {
   display: flex;
   align-items: start;
-  justify-content: space-between;
+  justify-content: space-evenly;
   margin: 0 2vw;
 }
 
 body {
   height: 100vh;
   display: grid;
-  grid-template-rows: 1fr 8fr 1fr;
+  grid-template-rows: 120px 8fr 75px;
   grid-template-columns: 1fr 5fr 1fr;
   background-color: burlywood;
 }
@@ -44,13 +44,27 @@ footer {
   grid-row: 3;
   grid-column: 1 / 4;
   align-items: center;
-  justify-content: start;
+  justify-content: space-around;
 }
 
 footer > img {
   max-height: 75px;
+  grid-column: 2;
+  border-radius: 50%;
+  transition: ease 200ms;
 }
 
+
 .guy {
+  background-position-x: center;
   position: absolute;
+  max-height: 100px;
+  left: 50%;
+  top: 50%;
+  
+}
+
+
+.fired{
+  background-color: black;
 }
