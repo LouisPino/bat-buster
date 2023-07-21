@@ -1,9 +1,14 @@
 //variables
 let mousePos = [];
 let gunUnflasher
-const guySpeed = 15
+const guySpeed = 25
 let xTrans = 0
 let yTrans = 0
+let headerHeight = 120
+let footerHeight = 75
+let guyHeight = 100
+let guyWidth = 100
+let borderWidth = window.innerWidth/7
 
 //event listeners
 document.addEventListener("mousemove", storeMouse);
@@ -14,7 +19,6 @@ pistol = document.querySelector('.pistol')
 rifle = document.querySelector('.rifle')
 bazooka = document.querySelector('.bazooka')
 guy = document.querySelector('.guy')
-
 
 
 //functions
@@ -45,37 +49,39 @@ function fire(num) {
     //console.log('fired')
     num < 60 ? num-=48 : num-=96
     if (num === 3) {
-      console.log("You shot your bazooka");
+      //console.log("You shot your bazooka");
       gunFlash(bazooka)
     } else if (num === 2) {
-      console.log("You shot your rifle");
+    //  console.log("You shot your rifle");
       gunFlash(rifle)
     } else {
-        console.log("You shot your pistol");
+       // console.log("You shot your pistol");
         gunFlash(pistol)
     }
   }
 
 function moveGuy(num){
-       // console.log('moved')
+  // console.log(xTrans, (window.innerWidth*-.5) + borderWidth)
         if (num === 37 || num === 65) {
-        //  console.log("You moved left");
+        if(xTrans > (window.innerWidth*-.5) + borderWidth){
           guy.style.transform = `translate(${xTrans - guySpeed}px, ${yTrans}px)`
           xTrans -= guySpeed
-      //    console.log(guy)
+        }
         } else if (num === 38 || num === 87) {
-         // console.log("You moved up");
-          console.log(xTrans)
-          guy.style.transform = `translate(${xTrans}px, ${yTrans - guySpeed}px)`
-          yTrans -= guySpeed
-        } else if (num === 39 || num === 68) {
-       //   console.log("You moved right");
+         if(yTrans > (window.innerHeight*-.5) + headerHeight){
+           guy.style.transform = `translate(${xTrans}px, ${yTrans - guySpeed}px)`
+           yTrans -= guySpeed
+          }
+        } else if (num === 39 || num === 68){
+          if(xTrans < (window.innerWidth*.5) - borderWidth - guyWidth){
           guy.style.transform = `translate(${xTrans + guySpeed}px, ${yTrans}px)`
           xTrans += guySpeed
+          }
         } else if (num === 40 || num === 83){
-        //  console.log("You moved down");
+          if(yTrans*-1 > (window.innerHeight*-.5) + footerHeight + guyHeight){
           guy.style.transform = `translate(${xTrans}px, ${yTrans + guySpeed}px)`
           yTrans += guySpeed
+          }
         }
     }
 

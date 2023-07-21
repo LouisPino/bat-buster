@@ -9,6 +9,26 @@ Louis Pino
 
 
 ## Pseudocode
+
+MVP:
+Guy moves within borders√
+Enemies spawn every 2 seconds
+Click to decrement enemy health by 1
+One life, you touch you die
+Restart modal
+
+Stretch:
+Change weapons with number buttons
+Enemys spawn faster over time
+Enemy health grows over time
+3 lives
+
+
+Extra Stretch: 
+Level system
+
+
+
 Variables---
 totalLives = 3
 guySpeed = 200ms
