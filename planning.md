@@ -10,3 +10,99 @@ Louis Pino
 
 ## Pseudocode
 
+totalLives = 3
+speed = 200ms
+kills = 0
+batCount = 0
+
+enemy class - 
+health: 10
+location: chooseLocation()
+direction: [Random(1-5)], [Random(1-5)] - represents x and y movement speed in pixels per cycle
+reverse direction()
+touchGuy()
+movebat()
+
+
+
+
+init(){
+    lives = totalLives
+
+
+
+}
+
+
+guyMoves-
+setInterval(move, speed) 
+
+decrementHealth() - 
+
+
+reverse direction() - If touching top or bottom, ydirection *= -1, if touching left opr right wall, x direction *= -1.
+
+move() -
+if W held down, y+=1px
+if S held down, y-=1px
+if A held down, x+=1px
+if D held down, x-=1px
+renderGuy()
+
+
+loseLife()-
+lives -= 1
+postLifeLost()
+eraseBats()
+
+
+
+
+
+
+
+render(){
+    renderGuy()
+    renderLives()
+
+
+}
+
+renderLives(){
+    in div spaced on right of flex box header-
+    for(i=0; i<totalLives%lives; i++){
+        append empty hearts
+    }
+    for (for(i=0; i<lives; i++){
+        append hearts
+    }
+}
+
+
+
+ touchGuy(){
+    if (batXRange crosses guy Xrange && bat yrange crosses guy yrange){
+        loseLife
+    }
+
+ }
+
+ postLifeLost(){
+    Basically init but without resetting some variables (kill count stays, don't reinitialize lives to 0, etc.)
+
+ }
+
+ eraseBats(){
+    remove all bats
+ }
+
+ generateBat(){
+    batCount++
+    bat[i]= new Enemy()
+ }
+
+ moveBat(){
+    setInterval(function(){
+    yPos += direction[1]
+    xPos += direction[0]}, 200)
+ }
