@@ -12,6 +12,8 @@ let batSpeedFreq = 50;
 let lives = 3;
 let score = 0;
 
+let gunSelected
+
 let guy = {
   speed: 25,
   width: 100,
@@ -51,7 +53,7 @@ class Bat {
      setInterval(function () {
       q.xTrans += q.speed * xDir;
       q.yTrans += q.speed * yDir;
-      console.log(batEls)
+  
       if (onBorder(q.xTrans, q.yTrans)=== 'left' ||onBorder(q.xTrans, q.yTrans) ==='right') {
         xDir *= -1
       }
@@ -70,10 +72,12 @@ class Bat {
     batEls[batCount] = document.createElement("img");
     batEls[batCount].classList.add("bat");
     batEls[batCount].src = "assets/bat.gif";
+    batEls[batCount].id = `${batCount}`
     batEls[
       batCount
     ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
     mainEl.appendChild(batEls[batCount])
+    batEls[batCount].addEventListener("click", decHealth);
     batCount++;
     render();
   }
@@ -91,6 +95,7 @@ modalEl = document.querySelector(".modal");
 modalPEl = document.querySelector(".modal-p");
 modalTitleEl = document.querySelector(".modal-title");
 startBtnEl = document.querySelector(".start-game");
+let guns = [pistol, rifle, bazooka]
 
 //event listeners
 document.addEventListener("mousemove", storeMouse);
@@ -106,8 +111,8 @@ function init() {
   batEls = []
   batGenFreq = 3000;
   lives = 3;
+  gun = pistol
   render();
-  console.log(batObjs)
 }
 
 function buttonPress(e) {
@@ -123,23 +128,26 @@ function buttonPress(e) {
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
-  console.log(mousePos);
 }
 
 function fire(num) {
   num < 60 ? (num -= 48) : (num -= 96);
   if (num === 3) {
-    gunFlash(bazooka);
+    gunSelect(bazooka)
+   // gunFlash(bazooka)
+    guy.attack = 5
   } else if (num === 2) {
-    gunFlash(rifle);
+    gunSelect(rifle)
+    //gunFlash(rifle);
+    guy.attack = 3
   } else {
-    gunFlash(pistol);
-    loseLife();
+    //gunFlash(pistol);
+    gunSelect(pistol)
+    guy.attack = 1
   }
 }
 
 function guyMove(num) {
-  console.log(guyEl.getBoundingClientRect());
   if (num === 37 || num === 65) {
     if (guy.xTrans > window.innerWidth * -0.5 + borderWidth) {
       guy.xTrans -= guy.speed;
@@ -169,22 +177,30 @@ function guyMove(num) {
     }
   }
 }
+function gunSelect(gun){
+  gunSelected = gun
+guns.forEach(function(w){
+  w.classList.remove('selected')
+})
+gun.classList.add('selected')
+}
+
 
 function gunFlash(gun) {
   const unFlash = function () {
-    gun.classList.remove("fired");
+    gun.id = ''
   };
-  if (gun === pistol) {
+  if (gunSelected === pistol) {
     flashInt = 100;
   }
-  if (gun === rifle) {
+  if (gunSelected === rifle) {
     flashInt = 500;
   }
-  if (gun === bazooka) {
+  if (gunSelected === bazooka) {
     flashInt = 1000;
   }
   gunUnflasher = gun;
-  gun.classList.add("fired");
+  gun.id = "fired"
   setTimeout(unFlash, flashInt);
 }
 
@@ -248,7 +264,7 @@ function renderLives() {
 }
 
 function renderScore() {
-  scoreEl.innerText = `Score: ${batCount}`;
+  scoreEl.innerText = `Score: ${score}`;
 }
 
 function loseLife() {
@@ -260,7 +276,6 @@ function loseLife() {
 }
 
 function gameOver() {
-  //location.reload()
   clearInterval(newBats);
   for (i = 0; i < batCount; i++) {
     batEls[i].remove();
@@ -301,17 +316,24 @@ function renderGuy(){
 
 }
 
+function decHealth(e){
+gunFlash(gunSelected)
+batObjs[e.target.id].health -= guy.attack
+if(batObjs[e.target.id].health <= 0){
+  batEls[e.target.id].remove()
+  score ++
+}
+render()
+
+}
+
+
 init();
 
 
 //MVP
-//fix Regen
+//add sound
 
 //STRETCH
-//Add way to kill bats
-//Change weapon changes guy.attack 1, 3, or 5. On bat click, decrement bat.health by guy.attack.
-
-
-//Add little hover line above weapon chosen, on attacks cause the flash
 //Use getClientBoundingRect() to make real borders
-//get woodpanel images for edges
+//add click delay for each gun
