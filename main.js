@@ -7,6 +7,8 @@ let borderWidth = window.innerWidth / 7;
 let batCount = 0
 let batObjs = []
 let batEls = []
+let batGenFreq = 1000
+let batSpeedFreq = 50
 
 let guy = {
   speed: 25,
@@ -27,17 +29,40 @@ class Bat {
     this.id = batCount
   }
  
+
+
  batMove(){
    let q = this
+   if(this.xTrans < window.innerWidth/2 - borderWidth){
    setInterval(function(){
-    q.xTrans += q.speed
+    {q.xTrans += q.speed}
     renderBat()
-    if(onBorder(q.xTrans, q.yTrans) === 'right'){mainEl.removeChild(batEls[q.id])}
-  }, 200)
+    if(onBorder(q.xTrans, q.yTrans)){
+      batEls[q.id].remove()
+        }
+  }, batSpeedFreq)}
 
+
+
+  
+  if(this.xTrans > window.innerWidth/2 - borderWidth){
+    setInterval(function(){
+     {q.xTrans -= q.speed}
+   }, batSpeedFreq)}
+   if(this.yTrans < window.innerHeight/2 - 100){
+    setInterval(function(){
+     {q.yTrans += q.speed}
+   }, batSpeedFreq)}
+   if(this.yTrans > window.innerHeight/2 - 100){
+     setInterval(function(){
+      {q.yTrans -= q.speed}
+    }, batSpeedFreq)}
   }
 
-  // //  onBorder(this.xTrans, this.yTrans)
+
+
+
+
 
   batCreate() {
     batEls[batCount] = document.createElement('img')
@@ -66,6 +91,7 @@ function init() {
   guy.xTrans = 0
   guy.yTrans = 0
   batCount = 0
+  batGenFreq = 3000
 }
 
 function buttonPress(e) {
@@ -81,6 +107,8 @@ function buttonPress(e) {
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
+  console.log(mousePos)
+
 }
 
 function fire(num) {
@@ -148,33 +176,46 @@ function gunFlash(gun) {
   setTimeout(unFlash, flashInt);
 }
 
-
+console.log(window.innerHeight)
 function onBorder(x, y){
 if(x < window.innerWidth * -0.5 + borderWidth){return 'left'}
-else if(y < window.innerHeight * -0.5 + headerHeight){return 'top'}
-else if(x > window.innerWidth - borderWidth * 2 - guy.width){return 'right'}
-else if(y * -1 < window.innerHeight * -0.5 + footerHeight + guy.height){return 'bottom'}
+else if(y < 0){return 'top'}
+else if(x > window.innerWidth - borderWidth * 2){return 'right'}
+else if(y > window.innerHeight - footerHeight * 3){return 'bottom'}
 else return false
 }
 
 
 
-newBats = setInterval(function(){
-  batObjs[batCount] = new Bat(batCount)
-  batObjs[batCount].batCreate()
-  batObjs[batCount-1].batMove()
-},3000)
-
 function topBottom(){
   y = Math.floor(Math.random()*2)
- return  y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight
+  return  y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight
 }
 
 function renderBat(){
-batEls.forEach(function(batEl, idx){
-batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`
-})
+  batEls.forEach(function(batEl, idx){
+    batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`
+  })
+}
+
+function increaseBatGenFreq(){
+  if (3 % batCount === 0 && batGenFreq > 500){
+  batGenFreq -= 500
+  clearInterval(newBats)
+  releaseBats()
+  console.log()
+  }
 }
 
 
+function releaseBats(){
+  newBats = setInterval(function(){
+    batObjs[batCount] = new Bat(batCount)
+    batObjs[batCount].batCreate()
+    batObjs[batCount-1].batMove()
+    increaseBatGenFreq()
+  }, batGenFreq)
+}
 
+init()
+releaseBats()
