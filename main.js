@@ -1,98 +1,180 @@
 //variables
 let mousePos = [];
-let gunUnflasher
-const guySpeed = 25
-let xTrans = 0
-let yTrans = 0
-let headerHeight = 120
-let footerHeight = 75
-let guyHeight = 100
-let guyWidth = 100
-let borderWidth = window.innerWidth/7
+let gunUnflasher;
+let headerHeight = 120;
+let footerHeight = 75;
+let borderWidth = window.innerWidth / 7;
+let batCount = 0
+let batObjs = []
+let batEls = []
+
+let guy = {
+  speed: 25,
+  width: 100,
+  height: 100,
+  xTrans: 0,
+  yTrans: 0,
+};
+
+class Bat {
+  constructor(batCount) {
+    this.health = 10;
+    this.speed = 20;
+    this.height = 50;
+    this.width = 50;
+    this.xTrans = Math.floor(Math.random()* (window.innerWidth - borderWidth*2 - this.width));
+    this.yTrans = topBottom();
+    this.id = batCount
+  }
+ 
+ batMove(){
+   let q = this
+   setInterval(function(){
+    q.xTrans += q.speed
+    renderBat()
+    if(onBorder(q.xTrans, q.yTrans) === 'right'){mainEl.removeChild(batEls[q.id])}
+  }, 200)
+
+  }
+
+  // //  onBorder(this.xTrans, this.yTrans)
+
+  batCreate() {
+    batEls[batCount] = document.createElement('img')
+    batEls[batCount].classList.add('bat')
+    batEls[batCount].src = 'assets/bat.gif'
+    batEls[batCount].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`
+    mainEl.appendChild(batEls[batCount])
+    batCount++
+  }
+}
 
 //event listeners
 document.addEventListener("mousemove", storeMouse);
-document.addEventListener("keydown", buttonPress)
+document.addEventListener("keydown", buttonPress);
 
 //cached elements
-pistol = document.querySelector('.pistol')
-rifle = document.querySelector('.rifle')
-bazooka = document.querySelector('.bazooka')
-guy = document.querySelector('.guy')
-
+mainEl = document.querySelector("main");
+pistol = document.querySelector(".pistol");
+rifle = document.querySelector(".rifle");
+bazooka = document.querySelector(".bazooka");
+guyEl = document.querySelector(".guy");
 
 //functions
 
-function init(){
-guyPos = [0, 0]
-
-
+function init() {
+  guy.xTrans = 0
+  guy.yTrans = 0
+  batCount = 0
 }
 
 function buttonPress(e) {
-    //console.log(e.keyCode)
-    let key1= e.keyCode >=48 && e.keyCode<= 57
-    let key2= e.keyCode >=96 && e.keyCode<= 105
-    if(key1 || key2){fire(e.keyCode)}
-    else
- {moveGuy(e.keyCode)}
+  let key1 = e.keyCode >= 48 && e.keyCode <= 57;
+  let key2 = e.keyCode >= 96 && e.keyCode <= 105;
+  if (key1 || key2) {
+    fire(e.keyCode);
+  } else {
+    guyMove(e.keyCode);
+  }
 }
-
 
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
-  //console.log(mousePos)
 }
 
 function fire(num) {
-    //console.log('fired')
-    num < 60 ? num-=48 : num-=96
-    if (num === 3) {
-      //console.log("You shot your bazooka");
-      gunFlash(bazooka)
-    } else if (num === 2) {
-    //  console.log("You shot your rifle");
-      gunFlash(rifle)
-    } else {
-       // console.log("You shot your pistol");
-        gunFlash(pistol)
+  num < 60 ? (num -= 48) : (num -= 96);
+  if (num === 3) {
+    gunFlash(bazooka);
+  } else if (num === 2) {
+    gunFlash(rifle);
+  } else {
+    gunFlash(pistol);
+  }
+}
+
+function guyMove(num) {
+  if (num === 37 || num === 65) {
+    if (guy.xTrans > window.innerWidth * -0.5 + borderWidth) {
+      guyEl.style.transform = `translate(${guy.xTrans - guy.speed}px, ${
+        guy.yTrans
+      }px)`;
+      guy.xTrans -= guy.speed;
+    }
+  } else if (num === 38 || num === 87) {
+    if (guy.yTrans > window.innerHeight * -0.5 + headerHeight) {
+      guyEl.style.transform = `translate(${guy.xTrans}px, ${
+        guy.yTrans - guy.speed
+      }px)`;
+      guy.yTrans -= guy.speed;
+    }
+  } else if (num === 39 || num === 68) {
+    if (guy.xTrans < window.innerWidth * 0.5 - borderWidth - guy.width) {
+      guyEl.style.transform = `translate(${guy.xTrans + guy.speed}px, ${
+        guy.yTrans
+      }px)`;
+      guy.xTrans += guy.speed;
+    }
+  } else if (num === 40 || num === 83) {
+    if (
+      guy.yTrans * -1 >
+      window.innerHeight * -0.5 + footerHeight + guy.height
+    ) {
+      guyEl.style.transform = `translate(${guy.xTrans}px, ${
+        guy.yTrans + guy.speed
+      }px)`;
+      guy.yTrans += guy.speed;
     }
   }
+  console.log(guy.xTrans, guy.yTrans, onBorder(guy.xTrans, guy.yTrans))
+}
 
-function moveGuy(num){
-  // console.log(xTrans, (window.innerWidth*-.5) + borderWidth)
-        if (num === 37 || num === 65) {
-        if(xTrans > (window.innerWidth*-.5) + borderWidth){
-          guy.style.transform = `translate(${xTrans - guySpeed}px, ${yTrans}px)`
-          xTrans -= guySpeed
-        }
-        } else if (num === 38 || num === 87) {
-         if(yTrans > (window.innerHeight*-.5) + headerHeight){
-           guy.style.transform = `translate(${xTrans}px, ${yTrans - guySpeed}px)`
-           yTrans -= guySpeed
-          }
-        } else if (num === 39 || num === 68){
-          if(xTrans < (window.innerWidth*.5) - borderWidth - guyWidth){
-          guy.style.transform = `translate(${xTrans + guySpeed}px, ${yTrans}px)`
-          xTrans += guySpeed
-          }
-        } else if (num === 40 || num === 83){
-          if(yTrans*-1 > (window.innerHeight*-.5) + footerHeight + guyHeight){
-          guy.style.transform = `translate(${xTrans}px, ${yTrans + guySpeed}px)`
-          yTrans += guySpeed
-          }
-        }
-    }
+function gunFlash(gun) {
+  const unFlash = function () {
+    gun.classList.remove("fired");
+  };
+  if (gun === pistol) {
+    flashInt = 100;
+  }
+  if (gun === rifle) {
+    flashInt = 500;
+  }
+  if (gun === bazooka) {
+    flashInt = 1000;
+  }
+  gunUnflasher = gun;
+  gun.classList.add("fired");
+  setTimeout(unFlash, flashInt);
+}
 
-    function gunFlash(gun){
-        const unFlash = function(){
-            gun.classList.remove('fired')
-        }
-        if(gun === pistol){flashInt = 100}
-        if(gun === rifle){flashInt = 500}
-        if(gun === bazooka){flashInt = 1000}
-        gunUnflasher = gun
-        gun.classList.add('fired')
-        setTimeout(unFlash, flashInt)
-    }
+
+function onBorder(x, y){
+if(x < window.innerWidth * -0.5 + borderWidth){return 'left'}
+else if(y < window.innerHeight * -0.5 + headerHeight){return 'top'}
+else if(x > window.innerWidth - borderWidth * 2 - guy.width){return 'right'}
+else if(y * -1 < window.innerHeight * -0.5 + footerHeight + guy.height){return 'bottom'}
+else return false
+}
+
+
+
+newBats = setInterval(function(){
+  batObjs[batCount] = new Bat(batCount)
+  batObjs[batCount].batCreate()
+  batObjs[batCount-1].batMove()
+},3000)
+
+function topBottom(){
+  y = Math.floor(Math.random()*2)
+ return  y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight
+}
+
+function renderBat(){
+batEls.forEach(function(batEl, idx){
+batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`
+})
+}
+
+
+
