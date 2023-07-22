@@ -4,11 +4,13 @@ let gunUnflasher;
 let headerHeight = 120;
 let footerHeight = 75;
 let borderWidth = window.innerWidth / 7;
-let batCount = 0
-let batObjs = []
-let batEls = []
-let batGenFreq = 1000
-let batSpeedFreq = 50
+let batCount = 0;
+let batObjs = [];
+let batEls = [];
+let batGenFreq = 1000;
+let batSpeedFreq = 50;
+let lives = 3
+let score = 0
 
 let guy = {
   speed: 25,
@@ -16,61 +18,50 @@ let guy = {
   height: 100,
   xTrans: 0,
   yTrans: 0,
+  attack: 0
 };
 
 class Bat {
   constructor(batCount) {
     this.health = 10;
-    this.speed = 20;
+    this.speed = 10;
     this.height = 50;
     this.width = 50;
-    this.xTrans = Math.floor(Math.random()* (window.innerWidth - borderWidth*2 - this.width));
+    this.xTrans = Math.floor(
+      Math.random() * (window.innerWidth - borderWidth * 2 - this.width)
+    );
     this.yTrans = topBottom();
-    this.id = batCount
-  }
- 
-
-
- batMove(){
-   let q = this
-   if(this.xTrans < window.innerWidth/2 - borderWidth){
-   setInterval(function(){
-    {q.xTrans += q.speed}
-    renderBat()
-    if(onBorder(q.xTrans, q.yTrans)){
-      batEls[q.id].remove()
-        }
-  }, batSpeedFreq)}
-
-
-
-  
-  if(this.xTrans > window.innerWidth/2 - borderWidth){
-    setInterval(function(){
-     {q.xTrans -= q.speed}
-   }, batSpeedFreq)}
-   if(this.yTrans < window.innerHeight/2 - 100){
-    setInterval(function(){
-     {q.yTrans += q.speed}
-   }, batSpeedFreq)}
-   if(this.yTrans > window.innerHeight/2 - 100){
-     setInterval(function(){
-      {q.yTrans -= q.speed}
-    }, batSpeedFreq)}
+    this.id = batCount;
   }
 
-
-
-
-
+  batMove() {
+    let q = this;
+    let xDir = 1
+    let yDir = 1
+    if (q.xTrans < window.innerWidth / 2 - borderWidth) {xDir = 1}
+    else if(q.xTrans > window.innerWidth / 2 - borderWidth) {xDir = -1}
+    if (q.yTrans < window.innerHeight / 2 - 100) {yDir = 1}
+    else if (q.yTrans > window.innerHeight / 2 - 100) {yDir = -1}
+    setInterval(function () {
+          q.xTrans += q.speed * xDir;
+          q.yTrans += q.speed * yDir;
+      if (onBorder(q.xTrans, q.yTrans)) {
+        batEls[q.id].remove();
+      }
+      renderBat();
+    }, batSpeedFreq);
+  }
 
   batCreate() {
-    batEls[batCount] = document.createElement('img')
-    batEls[batCount].classList.add('bat')
-    batEls[batCount].src = 'assets/bat.gif'
-    batEls[batCount].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`
-    mainEl.appendChild(batEls[batCount])
-    batCount++
+    batEls[batCount] = document.createElement("img");
+    batEls[batCount].classList.add("bat");
+    batEls[batCount].src = "assets/bat.gif";
+    batEls[
+      batCount
+    ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
+    mainEl.appendChild(batEls[batCount]);
+    batCount++;
+    render()
   }
 }
 
@@ -84,14 +75,19 @@ pistol = document.querySelector(".pistol");
 rifle = document.querySelector(".rifle");
 bazooka = document.querySelector(".bazooka");
 guyEl = document.querySelector(".guy");
+livesDiv = document.querySelector(".lives");
+scoreEl = document.querySelector(".score");
+modalEl = document.querySelector(".modal");
+startBtnEl = document.querySelector(".start-game");
 
 //functions
-
 function init() {
-  guy.xTrans = 0
-  guy.yTrans = 0
-  batCount = 0
-  batGenFreq = 3000
+  guy.xTrans = 0;
+  guy.yTrans = 0;
+  batCount = 0;
+  batGenFreq = 3000;
+  lives = 3
+  render()
 }
 
 function buttonPress(e) {
@@ -107,8 +103,7 @@ function buttonPress(e) {
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
-  console.log(mousePos)
-
+  console.log(mousePos);
 }
 
 function fire(num) {
@@ -155,7 +150,7 @@ function guyMove(num) {
       guy.yTrans += guy.speed;
     }
   }
-  console.log(guy.xTrans, guy.yTrans, onBorder(guy.xTrans, guy.yTrans))
+  console.log(guy.xTrans, guy.yTrans, onBorder(guy.xTrans, guy.yTrans));
 }
 
 function gunFlash(gun) {
@@ -176,46 +171,104 @@ function gunFlash(gun) {
   setTimeout(unFlash, flashInt);
 }
 
-console.log(window.innerHeight)
-function onBorder(x, y){
-if(x < window.innerWidth * -0.5 + borderWidth){return 'left'}
-else if(y < 0){return 'top'}
-else if(x > window.innerWidth - borderWidth * 2){return 'right'}
-else if(y > window.innerHeight - footerHeight * 3){return 'bottom'}
-else return false
+console.log(window.innerHeight);
+function onBorder(x, y) {
+  if (x < window.innerWidth * -0.5 + borderWidth) {
+    return "left";
+  } else if (y < 0) {
+    return "top";
+  } else if (x > window.innerWidth - borderWidth * 2) {
+    return "right";
+  } else if (y > window.innerHeight - footerHeight * 3) {
+    return "bottom";
+  } else return false;
 }
 
-
-
-function topBottom(){
-  y = Math.floor(Math.random()*2)
-  return  y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight
+function topBottom() {
+  y = Math.floor(Math.random() * 2);
+  return y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight;
 }
 
-function renderBat(){
-  batEls.forEach(function(batEl, idx){
-    batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`
-  })
+function renderBat() {
+  batEls.forEach(function (batEl, idx) {
+    batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`;
+  });
 }
 
-function increaseBatGenFreq(){
-  if (3 % batCount === 0 && batGenFreq > 500){
-  batGenFreq -= 500
-  clearInterval(newBats)
-  releaseBats()
-  console.log()
+function increaseBatGenFreq(batCount) {
+  if (batCount % 12 === 0 && batGenFreq > 500) {
+    clearInterval(newBats)
+    batGenFreq -= 500;
+    releaseBats()
+    console.log(batGenFreq);
   }
 }
 
-
-function releaseBats(){
-  newBats = setInterval(function(){
-    batObjs[batCount] = new Bat(batCount)
-    batObjs[batCount].batCreate()
-    batObjs[batCount-1].batMove()
-    increaseBatGenFreq()
-  }, batGenFreq)
+function releaseBats() {
+  newBats = setInterval(function () {
+    batObjs[batCount] = new Bat(batCount);
+    batObjs[batCount].batCreate();
+    batObjs[batCount - 1].batMove();
+    console.log(batCount)
+    increaseBatGenFreq(batCount);
+  }, batGenFreq);
 }
 
-init()
+function render(){
+  renderBat()
+  renderLives()
+  renderScore()
+}
+
+function renderLives(){
+  let lifeEls=[]
+  while(livesDiv.firstChild){livesDiv.removeChild(livesDiv.firstChild)}
+for(i=0; i<lives; i++){
+lifeEls[i]= document.createElement('img')
+lifeEls[i].src = 'assets/heart.png'
+livesDiv.appendChild(lifeEls[i])
+}
+}
+
+function renderScore(){
+scoreEl.innerText = `Score: ${batCount}`
+}
+
+function loseLife(){
+lives -= 1
+renderLives()
+}
+
+
+
+function startGame(){
+modalEl.display = 'none'
 releaseBats()
+}
+
+
+init();
+
+//releaseBats();
+
+
+
+
+
+
+
+//MVP
+//start screen, start button calls releaseBats() and removes start screen
+
+//determine collisions and call loseLife//
+
+//when lives are 0, gameOver() which pauses bats and event listeners and displays end screen, 
+//play again button calls init() and releaseBats()
+
+
+
+//STRETCH
+//Add way to kill bats
+//Change weapon changes guy.attack 1, 3, or 5. On bat click, decrement bat.health by guy.attack.
+
+//Add little hover line above weapon chosen, on attacks cause the flash
