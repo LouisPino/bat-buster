@@ -48,14 +48,21 @@ class Bat {
     } else if (q.yTrans > window.innerHeight / 2 - 100) {
       yDir = -1;
     }
-    setInterval(function () {
+     setInterval(function () {
       q.xTrans += q.speed * xDir;
       q.yTrans += q.speed * yDir;
-      if (onBorder(q.xTrans, q.yTrans)) {
-        batEls[q.id].remove();
+      console.log(batEls)
+      if (onBorder(q.xTrans, q.yTrans)=== 'left' ||onBorder(q.xTrans, q.yTrans) ==='right') {
+        xDir *= -1
+      }
+      if (onBorder(q.xTrans, q.yTrans)=== 'top' ||onBorder(q.xTrans, q.yTrans) ==='bottom') {
+        yDir *= -1
       }
       renderBat();
-      collide();
+      if (collide(q)) {
+        batEls[q.id].remove();
+        loseLife();
+      }
     }, batSpeedFreq);
   }
 
@@ -66,7 +73,7 @@ class Bat {
     batEls[
       batCount
     ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
-    mainEl.appendChild(batEls[batCount]);
+    mainEl.appendChild(batEls[batCount])
     batCount++;
     render();
   }
@@ -95,9 +102,12 @@ function init() {
   guy.xTrans = 0;
   guy.yTrans = 0;
   batCount = 0;
+  batObjs = []
+  batEls = []
   batGenFreq = 3000;
   lives = 3;
   render();
+  console.log(batObjs)
 }
 
 function buttonPress(e) {
@@ -138,8 +148,7 @@ function guyMove(num) {
   } else if (num === 38 || num === 87) {
     if (guy.yTrans > window.innerHeight * -0.5 + headerHeight) {
       guy.yTrans -= guy.speed;
-      guyEl.style.transform = `translate(${guy.xTrans}px, ${
-        guy.yTrans}px)`;
+      guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
     }
   } else if (num === 39 || num === 68) {
     if (guy.xTrans < window.innerWidth * 0.5 - borderWidth - guy.width) {
@@ -223,6 +232,7 @@ function render() {
   renderBat();
   renderLives();
   renderScore();
+  renderGuy();
 }
 
 function renderLives() {
@@ -250,6 +260,7 @@ function loseLife() {
 }
 
 function gameOver() {
+  //location.reload()
   clearInterval(newBats);
   for (i = 0; i < batCount; i++) {
     batEls[i].remove();
@@ -264,24 +275,43 @@ function gameOver() {
 }
 
 function startGame() {
-  init();
+  init()
   modalEl.remove();
   guyEl.style.display = "inline";
   releaseBats();
 }
 
-function collide() {}
+function collide(q) {
+  if (
+    batEls[q.id].getBoundingClientRect().x - q.width / 2 <
+      guyEl.getBoundingClientRect().x &&
+    batEls[q.id].getBoundingClientRect().x + q.width / 2 >
+      guyEl.getBoundingClientRect().x &&
+    batEls[q.id].getBoundingClientRect().y >
+      guyEl.getBoundingClientRect().y - guy.height &&
+    batEls[q.id].getBoundingClientRect().y - q.height <
+      guyEl.getBoundingClientRect().y
+  ) {
+    return true;
+  }
+}
+
+function renderGuy(){
+  guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
+
+}
 
 init();
 
+
 //MVP
-//determine collisions and call loseLife
+//fix Regen
 
 //STRETCH
 //Add way to kill bats
 //Change weapon changes guy.attack 1, 3, or 5. On bat click, decrement bat.health by guy.attack.
 
-//fix panels for small screens
+
 //Add little hover line above weapon chosen, on attacks cause the flash
 //Use getClientBoundingRect() to make real borders
 //get woodpanel images for edges
