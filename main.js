@@ -9,8 +9,8 @@ let batObjs = [];
 let batEls = [];
 let batGenFreq = 1000;
 let batSpeedFreq = 50;
-let lives = 3
-let score = 0
+let lives = 3;
+let score = 0;
 
 let guy = {
   speed: 25,
@@ -18,7 +18,7 @@ let guy = {
   height: 100,
   xTrans: 0,
   yTrans: 0,
-  attack: 0
+  attack: 0,
 };
 
 class Bat {
@@ -36,19 +36,26 @@ class Bat {
 
   batMove() {
     let q = this;
-    let xDir = 1
-    let yDir = 1
-    if (q.xTrans < window.innerWidth / 2 - borderWidth) {xDir = 1}
-    else if(q.xTrans > window.innerWidth / 2 - borderWidth) {xDir = -1}
-    if (q.yTrans < window.innerHeight / 2 - 100) {yDir = 1}
-    else if (q.yTrans > window.innerHeight / 2 - 100) {yDir = -1}
+    let xDir = 1;
+    let yDir = 1;
+    if (q.xTrans < window.innerWidth / 2 - borderWidth) {
+      xDir = 1;
+    } else if (q.xTrans > window.innerWidth / 2 - borderWidth) {
+      xDir = -1;
+    }
+    if (q.yTrans < window.innerHeight / 2 - 100) {
+      yDir = 1;
+    } else if (q.yTrans > window.innerHeight / 2 - 100) {
+      yDir = -1;
+    }
     setInterval(function () {
-          q.xTrans += q.speed * xDir;
-          q.yTrans += q.speed * yDir;
+      q.xTrans += q.speed * xDir;
+      q.yTrans += q.speed * yDir;
       if (onBorder(q.xTrans, q.yTrans)) {
         batEls[q.id].remove();
       }
       renderBat();
+      collide();
     }, batSpeedFreq);
   }
 
@@ -61,13 +68,9 @@ class Bat {
     ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
     mainEl.appendChild(batEls[batCount]);
     batCount++;
-    render()
+    render();
   }
 }
-
-//event listeners
-document.addEventListener("mousemove", storeMouse);
-document.addEventListener("keydown", buttonPress);
 
 //cached elements
 mainEl = document.querySelector("main");
@@ -78,7 +81,14 @@ guyEl = document.querySelector(".guy");
 livesDiv = document.querySelector(".lives");
 scoreEl = document.querySelector(".score");
 modalEl = document.querySelector(".modal");
+modalPEl = document.querySelector(".modal-p");
+modalTitleEl = document.querySelector(".modal-title");
 startBtnEl = document.querySelector(".start-game");
+
+//event listeners
+document.addEventListener("mousemove", storeMouse);
+document.addEventListener("keydown", buttonPress);
+startBtnEl.addEventListener("click", startGame);
 
 //functions
 function init() {
@@ -86,8 +96,8 @@ function init() {
   guy.yTrans = 0;
   batCount = 0;
   batGenFreq = 3000;
-  lives = 3
-  render()
+  lives = 3;
+  render();
 }
 
 function buttonPress(e) {
@@ -114,23 +124,22 @@ function fire(num) {
     gunFlash(rifle);
   } else {
     gunFlash(pistol);
+    loseLife();
   }
 }
 
 function guyMove(num) {
+  console.log(guyEl.getBoundingClientRect());
   if (num === 37 || num === 65) {
     if (guy.xTrans > window.innerWidth * -0.5 + borderWidth) {
-      guyEl.style.transform = `translate(${guy.xTrans - guy.speed}px, ${
-        guy.yTrans
-      }px)`;
       guy.xTrans -= guy.speed;
+      guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
     }
   } else if (num === 38 || num === 87) {
     if (guy.yTrans > window.innerHeight * -0.5 + headerHeight) {
-      guyEl.style.transform = `translate(${guy.xTrans}px, ${
-        guy.yTrans - guy.speed
-      }px)`;
       guy.yTrans -= guy.speed;
+      guyEl.style.transform = `translate(${guy.xTrans}px, ${
+        guy.yTrans}px)`;
     }
   } else if (num === 39 || num === 68) {
     if (guy.xTrans < window.innerWidth * 0.5 - borderWidth - guy.width) {
@@ -150,7 +159,6 @@ function guyMove(num) {
       guy.yTrans += guy.speed;
     }
   }
-  console.log(guy.xTrans, guy.yTrans, onBorder(guy.xTrans, guy.yTrans));
 }
 
 function gunFlash(gun) {
@@ -171,7 +179,6 @@ function gunFlash(gun) {
   setTimeout(unFlash, flashInt);
 }
 
-console.log(window.innerHeight);
 function onBorder(x, y) {
   if (x < window.innerWidth * -0.5 + borderWidth) {
     return "left";
@@ -197,10 +204,9 @@ function renderBat() {
 
 function increaseBatGenFreq(batCount) {
   if (batCount % 12 === 0 && batGenFreq > 500) {
-    clearInterval(newBats)
+    clearInterval(newBats);
     batGenFreq -= 500;
-    releaseBats()
-    console.log(batGenFreq);
+    releaseBats();
   }
 }
 
@@ -209,66 +215,73 @@ function releaseBats() {
     batObjs[batCount] = new Bat(batCount);
     batObjs[batCount].batCreate();
     batObjs[batCount - 1].batMove();
-    console.log(batCount)
     increaseBatGenFreq(batCount);
   }, batGenFreq);
 }
 
-function render(){
-  renderBat()
-  renderLives()
-  renderScore()
+function render() {
+  renderBat();
+  renderLives();
+  renderScore();
 }
 
-function renderLives(){
-  let lifeEls=[]
-  while(livesDiv.firstChild){livesDiv.removeChild(livesDiv.firstChild)}
-for(i=0; i<lives; i++){
-lifeEls[i]= document.createElement('img')
-lifeEls[i].src = 'assets/heart.png'
-livesDiv.appendChild(lifeEls[i])
-}
-}
-
-function renderScore(){
-scoreEl.innerText = `Score: ${batCount}`
+function renderLives() {
+  let lifeEls = [];
+  while (livesDiv.firstChild) {
+    livesDiv.removeChild(livesDiv.firstChild);
+  }
+  for (i = 0; i < lives; i++) {
+    lifeEls[i] = document.createElement("img");
+    lifeEls[i].src = "assets/heart.png";
+    livesDiv.appendChild(lifeEls[i]);
+  }
 }
 
-function loseLife(){
-lives -= 1
-renderLives()
+function renderScore() {
+  scoreEl.innerText = `Score: ${batCount}`;
 }
 
-
-
-function startGame(){
-modalEl.display = 'none'
-releaseBats()
+function loseLife() {
+  lives -= 1;
+  renderLives();
+  if (lives === 0) {
+    gameOver();
+  }
 }
 
+function gameOver() {
+  clearInterval(newBats);
+  for (i = 0; i < batCount; i++) {
+    batEls[i].remove();
+  }
+  guyEl.style.display = "none";
+  modalTitleEl.innerHTML = "Tarnation!";
+  modalPEl.innerHTML =
+    "The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.";
+  modalPEl.style.textAlign = "center";
+  startBtnEl.innerHTML = "Play Again?";
+  mainEl.appendChild(modalEl);
+}
+
+function startGame() {
+  init();
+  modalEl.remove();
+  guyEl.style.display = "inline";
+  releaseBats();
+}
+
+function collide() {}
 
 init();
 
-//releaseBats();
-
-
-
-
-
-
-
 //MVP
-//start screen, start button calls releaseBats() and removes start screen
-
-//determine collisions and call loseLife//
-
-//when lives are 0, gameOver() which pauses bats and event listeners and displays end screen, 
-//play again button calls init() and releaseBats()
-
-
+//determine collisions and call loseLife
 
 //STRETCH
 //Add way to kill bats
 //Change weapon changes guy.attack 1, 3, or 5. On bat click, decrement bat.health by guy.attack.
 
+//fix panels for small screens
 //Add little hover line above weapon chosen, on attacks cause the flash
+//Use getClientBoundingRect() to make real borders
+//get woodpanel images for edges

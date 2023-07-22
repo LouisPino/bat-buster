@@ -40,6 +40,7 @@ body {
 main {
   background-color: rgb(124, 121, 126);
   grid-column: 2 / 3;
+
 }
 
 .instructions {
@@ -47,9 +48,13 @@ main {
   display: flex;
   flex-direction: column;
   margin-top: 5rem;
-  justify-content: space-around;
+  justify-content: center;
   text-align: center;
   line-height: 25px;;
+}
+
+.instructions > p{
+  margin-top: 3rem;
 }
 
 footer {
@@ -75,6 +80,7 @@ footer > img {
   left: 50%;
   top: 50%;
   transition: ease 200ms;
+  display: none;
 }
 
 .fired {
@@ -87,3 +93,49 @@ footer > img {
   transition: ease 100ms;
   position: absolute;
 }
+
+.absolute{
+  position: absolute;
+}
+
+.modal{
+  position: fixed;
+  width: 50%;
+  height: 74%;
+  left: 25%;
+  top: 13%;
+  background-color: rgb(238 247	255	);
+}
+
+.modal > h2{
+  margin-top: 3rem;
+text-align: center;
+}
+
+.modal > p {
+text-align: center;
+margin: 2rem 3rem;
+line-height: 20px;
+letter-spacing: 2px;
+}
+
+.start-game{
+padding: 2rem;
+position: absolute;
+width: 60%;
+bottom: 5%;
+left: 20%;
+font-size: 1.2rem;
+}
+
+strong {
+font-size: 1.2rem;
+}
+
+@media screen and (max-height: 900px) {
+
+  .modal{
+    background-color: rgba(255, 255, 255, 0);
+  }
+  }
+
