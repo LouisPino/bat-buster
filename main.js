@@ -9,7 +9,9 @@ let batObjs = [];
 let batEls = [];
 let batGenFreq = 1000;
 let batSpeedFreq = 50;
-let lives = 3;
+let batMoveTimeId
+const maxLives = 3
+let lives = maxLives;
 let score = 0;
 const pistolAudio = new Audio('assets/pistol.mp3')
 const rifleAudio = new Audio('assets/rifle.mp3')
@@ -54,7 +56,7 @@ class Bat {
     } else if (q.yTrans > window.innerHeight / 2 - 100) {
       yDir = -1;
     }
-     setInterval(function () {
+    batMoveTimeId = setInterval(function () {
       q.xTrans += q.speed * xDir;
       q.yTrans += q.speed * yDir;
   
@@ -114,7 +116,7 @@ function init() {
   batObjs = []
   batEls = []
   batGenFreq = 3000;
-  lives = 3;
+  lives = maxLives;
   gun = pistol
   gunSelect(pistol)
   render();
@@ -265,8 +267,15 @@ function render() {
 
 function renderLives() {
   let lifeEls = [];
+  let emptyLifeEls = [];
   while (livesDiv.firstChild) {
     livesDiv.removeChild(livesDiv.firstChild);
+  }
+  console.log(maxLives - lives)
+  for (i = 0; i < maxLives - lives; i++) {
+    emptyLifeEls[i] = document.createElement("img");
+    emptyLifeEls[i].src = "assets/heart_empty.png";
+    livesDiv.appendChild(emptyLifeEls[i]);
   }
   for (i = 0; i < lives; i++) {
     lifeEls[i] = document.createElement("img");
@@ -338,8 +347,9 @@ if(batObjs[e.target.id].health <= 0){
   bonkAudio.play()
 }
 render()
-
 }
+
+
 
 
 init();
@@ -349,10 +359,6 @@ init();
 //hold key to keep moving
 //add click delay for each gun
 //Use getClientBoundingRect() to make real borders
+//fine tune collide
 
-
-
-
-
-//STRETCH
-//Levels
+//ask - how to clear batMoveLoop???
