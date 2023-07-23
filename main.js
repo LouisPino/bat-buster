@@ -142,7 +142,8 @@ class Bat {
       batCount
     ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
     mainEl.appendChild(batEls[batCount]);
-    batEls[batCount].addEventListener("mousedown", decHealth);
+    if(!defense){batEls[batCount].addEventListener("mousedown", decHealth)};
+    if(defense){score++}
     batCount++;
     render();
   }
@@ -488,29 +489,14 @@ if(guyMoveId === true){clearInterval(guyMoveId)}
 }
 
 
-
-//init()
-//initDefense()
-//guyMove()
-//initAttack()
-
-//startGame()
-
-
 //MVP
-//fix first bat glitching out
-//figure out how to clear batMoveLoop
-
-
-
-
+//can still kill on defense mode
 
 
 //stretch
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
 //sound toggle
 //fine tune collide
+//fix first bat glitching out
+//figure out how to clear batMoveLoop
 
-
-//can still kill on defense mode
-//need score counter on defnese mode
