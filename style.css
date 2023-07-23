@@ -51,13 +51,15 @@ main {
   display: flex;
   flex-direction: column;
   margin-top: 5rem;
-  justify-content: center;
+  justify-content: space-around;
   text-align: center;
-  line-height: 25px;;
+  line-height: 25px;
+ 
 }
 
-.instructions > p{
-  margin-top: 3rem;
+.sub-instructions > p{
+  margin-top: 2rem;
+  color: white
 }
 
 footer {
@@ -126,13 +128,19 @@ letter-spacing: 2px;
   background-color: black;
 }
 
-.start-game{
-padding: 2rem;
+.start-btn{
+padding: 1rem;
 position: absolute;
-width: 60%;
+width: 40%;
 bottom: 5%;
-left: 20%;
-font-size: 1.2rem;
+font-size: 1.1rem;
+}
+
+.attack{
+  left: 5%;
+}
+.defense{
+  right: 5%;
 }
 
 strong {

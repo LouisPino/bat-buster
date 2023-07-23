@@ -12,32 +12,53 @@
       <h1 class="title">BAT BUSTER</h1>
       <div class="subheader">
         <h2 class="score">Score:</h2>
-        <!-- <h2 class="level">Level:</h2> -->
         <div class="lives"></div>
       </div>
     </header>
-<div class="instructions">
-<!-- <h2>Controls:</h2> -->
-  <p>WASD or arrows to move</p>
-  <p>Number to switch weapons<br><br>1-Pistol<br>2-Rifle<br>3-Bazooka</p>
-  <p>Click to fire!</p>
-</div>
+    <div class="instructions">
+      <div class="attack-ins sub-instructions">
+        <h2>Attack Mode:</h2>
+        <p>Shoot the bats without getting hit!</p>
+        <p>Hold WASD or arrows to move</p>
+        <p>
+          Numbers to switch weapons<br /><br />1-Pistol<br />2-Rifle<br />3-Bazooka
+        </p>
+        <p>Click to fire!</p>
+      </div>
+      <div class="defense-ins sub-instructions">
+        <h2>Defense Mode:</h2>
+        <p>Don't let the bats give you rabies!</p>
+        <p>
+          Use both hands to tap WASD and arrows
+        </p>
+      </div>
+    </div>
 
     <main>
       <div class="modal absolute">
         <h2 class="modal-title">Welcome to Bat Buster!</h2>
-        <p class="modal-p absolute">Saddle up cowboy! As dusk settles over the dusty town, an ancient curse has awakened a swarm of bloodthirsty bats, terrorizing the innocent folks. It's up to you to become the ultimate Bat Buster, wielding your trusty revolver to protect the town from these winged menaces. With your quick draw skills and nerves of steel, let the showdown begin as you face off against the darkness and restore peace to the Wild West once and for all! <br> <br> <strong>Yee-frickin-haw!</strong> </p>
-        <button class="start-game absolute">LET'S BUST SOME BATS</button>
+        <p class="modal-p absolute">
+          Saddle up cowboy! As dusk settles over the dusty town, an ancient
+          curse has awakened a swarm of bloodthirsty bats, terrorizing the
+          innocent folks. It's up to you to become the ultimate Bat Buster,
+          wielding your trusty revolver to protect the town from these winged
+          menaces. With your quick draw skills and nerves of steel, let the
+          showdown begin as you face off against the darkness and restore peace
+          to the Wild West once and for all! <br />
+          <br />
+          <strong>Yee-frickin-haw!</strong>
+        </p>
+        <button class="start-btn attack absolute">ATTACK MODE</button>
+        <button class="start-btn defense absolute">DEFENSE MODE</button>
       </div>
     </main>
 
     <footer>
-      <img class='gun-img pistol'  src="assets/gun1.png" alt="" />
-      <img class='gun-img rifle' src="assets/gun2.png" alt="" />
-      <img class='gun-img bazooka' src="assets/gun3.webp" alt="" />
+      <img class="gun-img pistol" src="assets/gun1.png" alt="" />
+      <img class="gun-img rifle" src="assets/gun2.png" alt="" />
+      <img class="gun-img bazooka" src="assets/gun3.webp" alt="" />
     </footer>
 
-
-<img class='guy' src="assets/guy.png" alt="">
+    <img class="guy" src="assets/guy.png" alt="" />
   </body>
 </html>

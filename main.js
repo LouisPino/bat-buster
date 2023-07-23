@@ -25,6 +25,8 @@ const bazookaAudio = new Audio("assets/bazooka.mp3");
 const bonkAudio = new Audio("assets/bonk.mp3");
 const hurtAudio = new Audio("assets/hurt.mp3");
 let gunSelected;
+let defense = false
+let guyMoveId
 
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
@@ -157,13 +159,16 @@ scoreEl = document.querySelector(".score");
 modalEl = document.querySelector(".modal");
 modalPEl = document.querySelector(".modal-p");
 modalTitleEl = document.querySelector(".modal-title");
-startBtnEl = document.querySelector(".start-game");
+startBtnEl = document.querySelector(".attack");
+defenseBtnEl = document.querySelector(".defense");
+
 
 //event listeners
 document.addEventListener("mousemove", storeMouse);
 document.addEventListener("keydown", buttonPress);
 document.addEventListener("keyup", buttonUnPress);
 startBtnEl.addEventListener("click", startGame);
+defenseBtnEl.addEventListener("click", startGameDefenseMode);
 
 //functions
 function init() {
@@ -175,7 +180,7 @@ function init() {
   batEls = [];
   batGenFreq = 3000;
   lives = maxLives;
-  chooseWeapon(49);
+
   render();
 }
 
@@ -191,12 +196,13 @@ function getBounds(main) {
 }
 
 function buttonPress(e) {
-  isHeld(e.keyCode);
+  if (!defense) {isHeld(e.keyCode)};
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
     chooseWeapon(e.keyCode);
   }
+ // if(!defense){guyMove(e.keyCode)}
 }
 
 function storeMouse(e) {
@@ -213,53 +219,56 @@ function chooseWeapon(num) {
 }
 
 //DEFENSE MODE GUYMOVE()
-// function guyMove(num) {
-//   if (num === 37 || num === 65) {
-//     if (guy.xTrans > window.innerWidth * -0.5 + borderWidth) {
-//       guy.xTrans -= guy.speed;
-//     }
-//   } else if (num === 38 || num === 87) {
-//     if (guy.yTrans > window.innerHeight * -0.5 + headerHeight) {
-//       guy.yTrans -= guy.speed;
-//     }
-//   } else if (num === 39 || num === 68) {
-//     if (guy.xTrans < window.innerWidth * 0.5 - borderWidth - guy.width) {
-//       guy.xTrans += guy.speed;
-//     }
-//   } else if (num === 40 || num === 83) {
-//     if (
-//       guy.yTrans * -1 >
-//       window.innerHeight * -0.5 + footerHeight + guy.height
-//     ) {
-//       guy.yTrans += guy.speed;
-//     }
-//   }
-//   renderGuy()
-// }
-
-const guyMoveId = setInterval(function () {
-  if (heldKey === 37 || heldKey === 65) {
-    if (guy.left - guy.width/2 > bounds.left) {
-      guy.xTrans -= guy.speed;
+ function guyMoveDefenseMode(e) {
+  num = e.keyCode
+   if (num === 37 || num === 65) {
+     if (guy.left - guy.width/2 > bounds.left) {
+       guy.xTrans -= guy.speed;
     }
-  } else if (heldKey === 38 || heldKey === 87) {
-    if (guy.top > bounds.top) {
-      guy.yTrans -= guy.speed;
+   } else if (num === 38 || num === 87) {
+     if (guy.top > bounds.top) {
+       guy.yTrans -= guy.speed;
+     }
+   } else if (num === 39 || num === 68) {
+     if (guy.right+guy.width/2 < bounds.right) {
+       guy.xTrans += guy.speed;
+     }
+   } else if (num === 40 || num === 83) {
+     if (
+       guy.bottom + guy.height/2< bounds.bottom
+     ) {
+       guy.yTrans += guy.speed;
+     }
+   }
+   renderGuy()
+     getGuyBounds()
+ }
+function guyMove(){
+  guyMoveId = setInterval(function () {
+    if (heldKey === 37 || heldKey === 65) {
+      if (guy.left - guy.width/2 > bounds.left) {
+        guy.xTrans -= guy.speed;
+      }
+    } else if (heldKey === 38 || heldKey === 87) {
+      if (guy.top > bounds.top) {
+        guy.yTrans -= guy.speed;
+      }
+    } else if (heldKey === 39 || heldKey === 68) {
+      if (guy.right+guy.width/2 < bounds.right) {
+        guy.xTrans += guy.speed;
+      }
+    } else if (heldKey === 40 || heldKey === 83) {
+      if (
+        guy.bottom + guy.height/2< bounds.bottom
+      ) {
+        guy.yTrans += guy.speed;
+      }
     }
-  } else if (heldKey === 39 || heldKey === 68) {
-    if (guy.right+guy.width/2 < bounds.right) {
-      guy.xTrans += guy.speed;
-    }
-  } else if (heldKey === 40 || heldKey === 83) {
-    if (
-      guy.bottom + guy.height/2< bounds.bottom
-    ) {
-      guy.yTrans += guy.speed;
-    }
-  }
-  renderGuy();
-  getGuyBounds()
-}, guySpeedFreq);
+    renderGuy();
+    getGuyBounds()
+    console.log('guyM oveRunning')
+  }, guySpeedFreq);
+}
 
 function gunSelectBorder(gun) {
   guns.forEach(function (w) {
@@ -359,6 +368,7 @@ function loseLife() {
 
 function gameOver() {
   clearInterval(newBats);
+  clearInterval(guyMoveId)
   for (i = 0; i < batCount; i++) {
     batEls[i].remove();
   }
@@ -368,14 +378,25 @@ function gameOver() {
   guyEl.style.display = "none";
   modalTitleEl.innerHTML = "Tarnation!";
   modalPEl.innerHTML =
-    "The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.";
+    "The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.<br> <br> <br><h2>Play Again?</h2> ";
   modalPEl.style.textAlign = "center";
-  startBtnEl.innerHTML = "Play Again?";
+  //startBtnEl.innerHTML = "Play Again?";
   mainEl.appendChild(modalEl);
 }
 
 function startGame() {
   init();
+  initAttack()
+  score = 0;
+  renderScore();
+  modalEl.remove();
+  guyEl.style.display = "inline";
+  getGuyBounds()
+  releaseBats();
+}
+function startGameDefenseMode() {
+  init();
+  initDefense()
   score = 0;
   renderScore();
   modalEl.remove();
@@ -444,7 +465,38 @@ function getGuyBounds(){
   guy.bottom= guyEl.getBoundingClientRect().bottom
 }
 
-init();
+function initAttack(){
+  guy.speed = 50
+  defense = false
+  for (gun of guns){
+    gun.El.style.display = 'inline'
+    console.log(gun.El)
+  }
+  chooseWeapon(49)
+  document.removeEventListener('keydown', guyMoveDefenseMode)
+  guyMove()
+}
+
+function initDefense(){
+  guy.speed = 25
+  defense = true
+for (gun of guns){
+gun.El.style.display = 'none'
+}
+document.addEventListener('keydown', guyMoveDefenseMode)
+if(guyMoveId === true){clearInterval(guyMoveId)}
+}
+
+
+
+//init()
+//initDefense()
+//guyMove()
+//initAttack()
+
+//startGame()
+
+
 //MVP
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
@@ -460,15 +512,5 @@ init();
 //fine tune collide
 
 
-
-
-//Choose attack mode or defense mode at start / game over
-//
-//attack mode as isaa
-//
-//defense mode, no heldKey only pressing, use wasd on left and arrows on right to run away. Score generated with bat, not with kill)
-//what to do to make this happen-
-//useDefenseModeguyMove() instead of regular guymove()
-//hide weapons
-//disable click on bats
-//display different instructions
+//can still kill on defense mode
+//need score counter on defnese mode
