@@ -17,6 +17,7 @@ const pistolAudio = new Audio('assets/pistol.mp3')
 const rifleAudio = new Audio('assets/rifle.mp3')
 const bazookaAudio = new Audio('assets/bazooka.mp3')
 const bonkAudio = new Audio('assets/bonk.mp3')
+const hurtAudio = new Audio('assets/hurt.mp3')
 
 let gunSelected
 
@@ -115,7 +116,7 @@ function init() {
   batCount = 0;
   batObjs = []
   batEls = []
-  batGenFreq = 3000;
+  batGenFreq = 1000;
   lives = maxLives;
   gun = pistol
   gunSelect(pistol)
@@ -199,19 +200,15 @@ function gunFlash(gun) {
   };
   if (gunSelected === pistol) {
     flashInt = 100;
-    pistolAudio.currentTime = 0
-    pistolAudio.play()
-
+    playAudio(pistolAudio)
   }
   if (gunSelected === rifle) {
     flashInt = 500;
-    rifleAudio.currentTime = 0
-    rifleAudio.play()
+    playAudio(rifleAudio)
   }
   if (gunSelected === bazooka) {
     flashInt = 1000;
-    bazookaAudio.currentTime = 0
-    bazookaAudio.play()
+    playAudio(bazookaAudio)
   }
   gunUnflasher = gun;
   gun.id = "fired"
@@ -290,6 +287,7 @@ function renderScore() {
 
 function loseLife() {
   lives -= 1;
+  playAudio(hurtAudio)
   renderLives();
   if (lives === 0) {
     gameOver();
@@ -301,6 +299,9 @@ function gameOver() {
   for (i = 0; i < batCount; i++) {
     batEls[i].remove();
   }
+  init()
+  lives = 0
+  renderLives()
   guyEl.style.display = "none";
   modalTitleEl.innerHTML = "Tarnation!";
   modalPEl.innerHTML =
@@ -312,6 +313,8 @@ function gameOver() {
 
 function startGame() {
   init()
+  score = 0
+  renderScore()
   modalEl.remove();
   guyEl.style.display = "inline";
   releaseBats();
@@ -343,13 +346,16 @@ batObjs[e.target.id].health -= guy.attack
 if(batObjs[e.target.id].health <= 0){
   batEls[e.target.id].remove()
   score ++
-  bonkAudio.currentTime = 500
-  bonkAudio.play()
+  playAudio(bonkAudio)
 }
 render()
 }
 
 
+function playAudio(audio){
+  audio.currentTime = 0
+  audio.play()
+}
 
 
 init();
@@ -360,5 +366,7 @@ init();
 //add click delay for each gun
 //Use getClientBoundingRect() to make real borders
 //fine tune collide
+
+
 
 //ask - how to clear batMoveLoop???
