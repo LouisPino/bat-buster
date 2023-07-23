@@ -11,6 +11,10 @@ let batGenFreq = 1000;
 let batSpeedFreq = 50;
 let lives = 3;
 let score = 0;
+const pistolAudio = new Audio('assets/pistol.mp3')
+const rifleAudio = new Audio('assets/rifle.mp3')
+const bazookaAudio = new Audio('assets/bazooka.mp3')
+const bonkAudio = new Audio('assets/bonk.mp3')
 
 let gunSelected
 
@@ -112,6 +116,7 @@ function init() {
   batGenFreq = 3000;
   lives = 3;
   gun = pistol
+  gunSelect(pistol)
   render();
 }
 
@@ -192,12 +197,19 @@ function gunFlash(gun) {
   };
   if (gunSelected === pistol) {
     flashInt = 100;
+    pistolAudio.currentTime = 0
+    pistolAudio.play()
+
   }
   if (gunSelected === rifle) {
     flashInt = 500;
+    rifleAudio.currentTime = 0
+    rifleAudio.play()
   }
   if (gunSelected === bazooka) {
     flashInt = 1000;
+    bazookaAudio.currentTime = 0
+    bazookaAudio.play()
   }
   gunUnflasher = gun;
   gun.id = "fired"
@@ -322,6 +334,8 @@ batObjs[e.target.id].health -= guy.attack
 if(batObjs[e.target.id].health <= 0){
   batEls[e.target.id].remove()
   score ++
+  bonkAudio.currentTime = 500
+  bonkAudio.play()
 }
 render()
 
@@ -332,8 +346,13 @@ init();
 
 
 //MVP
-//add sound
+//hold key to keep moving
+//add click delay for each gun
+//Use getClientBoundingRect() to make real borders
+
+
+
+
 
 //STRETCH
-//Use getClientBoundingRect() to make real borders
-//add click delay for each gun
+//Levels
