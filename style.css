@@ -13,7 +13,7 @@
   margin: 25px 0;
 }
 header {
-  background-color: aliceblue;
+  background-image: url('assets/8bitsky.webp');
   grid-column: span 3;
 }
 .subheader {
@@ -30,7 +30,7 @@ body {
   grid-template-columns: 1fr 5fr 1fr;
   background-color: burlywood;
   background: url('https://www.americanpac.com/images/rustic_panels/swamp-cypress/swampland-cypress-wood-wall-paneling.jpg');
-  object-fit: cover;
+  background-size: 10% 100%;
 }
 
 .lives > img {
@@ -41,6 +41,7 @@ body {
 
 main {
   background-color: rgb(255, 241, 237);
+  background-image: url('assets/8bitground.jpeg');
   grid-column: 2 / 3;
 
 }
@@ -61,7 +62,7 @@ main {
 
 footer {
   display: flex;
-  background-color: rgb(216, 234, 178);
+  background-image: url('assets/8bitgrass.jpeg');
   grid-row: 3;
   grid-column: 1 / 4;
   align-items: center;
