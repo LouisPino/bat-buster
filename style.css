@@ -39,6 +39,15 @@ body {
   margin: 0 10px;
 }
 
+.sound-icon{
+position: absolute;
+height: 60px;
+
+top: 2%;
+right: 2%
+
+}
+
 main {
   background-color: rgb(255, 241, 237);
   background-image: url('assets/8bitground.jpeg');

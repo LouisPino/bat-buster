@@ -9,7 +9,7 @@ let batObjs = [];
 let batEls = [];
 let batGenFreq = 3000;
 let batSpeedFreq = 100;
-let batSpeed = 20 // pixels moved per jump
+let batSpeed = 20; // pixels moved per jump
 let guySpeedFreq = 100; // frequency of jump
 let batMoveTimeId;
 let batDim = 50;
@@ -25,8 +25,9 @@ const bazookaAudio = new Audio("assets/bazooka.mp3");
 const bonkAudio = new Audio("assets/bonk.mp3");
 const hurtAudio = new Audio("assets/hurt.mp3");
 let gunSelected;
-let defense = false
-let guyMoveId
+let defense = false;
+let guyMoveId;
+let sound = true;
 
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
@@ -38,14 +39,10 @@ class Gun {
   }
 }
 
-
 const pistol = new Gun(100, 3, "pistol", pistolAudio);
 const rifle = new Gun(500, 4, "rifle", rifleAudio);
 const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio);
 let guns = [pistol, rifle, bazooka];
-
-
-
 
 let guy = {
   speed: 25,
@@ -99,7 +96,7 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "left"
       ) {
-        q.xTrans += batSpeed *2.5
+        q.xTrans += batSpeed * 2.5;
         xDir *= -1;
       }
       if (
@@ -108,7 +105,7 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
-        q.xTrans -= batSpeed *2.5
+        q.xTrans -= batSpeed * 2.5;
         xDir *= -1;
       }
       if (
@@ -117,7 +114,7 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "top"
       ) {
-        q.yTrans += batSpeed *2.5
+        q.yTrans += batSpeed * 2.5;
         yDir *= -1;
       }
       if (
@@ -126,7 +123,7 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y + batDim
         ) === "bottom"
       ) {
-        q.yTrans -= batSpeed *2.5
+        q.yTrans -= batSpeed * 2.5;
         yDir *= -1;
       }
     }, batSpeedFreq);
@@ -142,8 +139,12 @@ class Bat {
       batCount
     ].style.transform = `translate(${this.xTrans}px, ${this.yTrans}px)`;
     mainEl.appendChild(batEls[batCount]);
-    if(!defense){batEls[batCount].addEventListener("mousedown", decHealth)};
-    if(defense){score++}
+    if (!defense) {
+      batEls[batCount].addEventListener("mousedown", decHealth);
+    }
+    if (defense) {
+      score++;
+    }
     batCount++;
     render();
   }
@@ -162,7 +163,7 @@ modalPEl = document.querySelector(".modal-p");
 modalTitleEl = document.querySelector(".modal-title");
 startBtnEl = document.querySelector(".attack");
 defenseBtnEl = document.querySelector(".defense");
-
+soundIconEl = document.querySelector(".sound-icon");
 
 //event listeners
 document.addEventListener("mousemove", storeMouse);
@@ -170,6 +171,7 @@ document.addEventListener("keydown", buttonPress);
 document.addEventListener("keyup", buttonUnPress);
 startBtnEl.addEventListener("click", startGame);
 defenseBtnEl.addEventListener("click", startGameDefenseMode);
+soundIconEl.addEventListener("click", toggleSound);
 
 //functions
 function init() {
@@ -197,13 +199,15 @@ function getBounds(main) {
 }
 
 function buttonPress(e) {
-  if (!defense) {isHeld(e.keyCode)};
+  if (!defense) {
+    isHeld(e.keyCode);
+  }
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
     chooseWeapon(e.keyCode);
   }
- // if(!defense){guyMove(e.keyCode)}
+  // if(!defense){guyMove(e.keyCode)}
 }
 
 function storeMouse(e) {
@@ -220,34 +224,32 @@ function chooseWeapon(num) {
 }
 
 //DEFENSE MODE GUYMOVE()
- function guyMoveDefenseMode(e) {
-  num = e.keyCode
-   if (num === 37 || num === 65) {
-     if (guy.left - guy.width/2 > bounds.left) {
-       guy.xTrans -= guy.speed;
+function guyMoveDefenseMode(e) {
+  num = e.keyCode;
+  if (num === 37 || num === 65) {
+    if (guy.left - guy.width / 2 > bounds.left) {
+      guy.xTrans -= guy.speed;
     }
-   } else if (num === 38 || num === 87) {
-     if (guy.top > bounds.top) {
-       guy.yTrans -= guy.speed;
-     }
-   } else if (num === 39 || num === 68) {
-     if (guy.right+guy.width/2 < bounds.right) {
-       guy.xTrans += guy.speed;
-     }
-   } else if (num === 40 || num === 83) {
-     if (
-       guy.bottom + guy.height/2< bounds.bottom
-     ) {
-       guy.yTrans += guy.speed;
-     }
-   }
-   renderGuy()
-     getGuyBounds()
- }
-function guyMove(){
+  } else if (num === 38 || num === 87) {
+    if (guy.top > bounds.top) {
+      guy.yTrans -= guy.speed;
+    }
+  } else if (num === 39 || num === 68) {
+    if (guy.right + guy.width / 2 < bounds.right) {
+      guy.xTrans += guy.speed;
+    }
+  } else if (num === 40 || num === 83) {
+    if (guy.bottom + guy.height / 2 < bounds.bottom) {
+      guy.yTrans += guy.speed;
+    }
+  }
+  renderGuy();
+  getGuyBounds();
+}
+function guyMove() {
   guyMoveId = setInterval(function () {
     if (heldKey === 37 || heldKey === 65) {
-      if (guy.left - guy.width/2 > bounds.left) {
+      if (guy.left - guy.width / 2 > bounds.left) {
         guy.xTrans -= guy.speed;
       }
     } else if (heldKey === 38 || heldKey === 87) {
@@ -255,19 +257,17 @@ function guyMove(){
         guy.yTrans -= guy.speed;
       }
     } else if (heldKey === 39 || heldKey === 68) {
-      if (guy.right+guy.width/2 < bounds.right) {
+      if (guy.right + guy.width / 2 < bounds.right) {
         guy.xTrans += guy.speed;
       }
     } else if (heldKey === 40 || heldKey === 83) {
-      if (
-        guy.bottom + guy.height/2< bounds.bottom
-      ) {
+      if (guy.bottom + guy.height / 2 < bounds.bottom) {
         guy.yTrans += guy.speed;
       }
     }
     renderGuy();
-    getGuyBounds()
-    console.log('guyM oveRunning')
+    getGuyBounds();
+    console.log("guyM oveRunning");
   }, guySpeedFreq);
 }
 
@@ -369,7 +369,7 @@ function loseLife() {
 
 function gameOver() {
   clearInterval(newBats);
-  clearInterval(guyMoveId)
+  clearInterval(guyMoveId);
   for (i = 0; i < batCount; i++) {
     batEls[i].remove();
   }
@@ -387,22 +387,22 @@ function gameOver() {
 
 function startGame() {
   init();
-  initAttack()
+  initAttack();
   score = 0;
   renderScore();
   modalEl.remove();
   guyEl.style.display = "inline";
-  getGuyBounds()
+  getGuyBounds();
   releaseBats();
 }
 function startGameDefenseMode() {
   init();
-  initDefense()
+  initDefense();
   score = 0;
   renderScore();
   modalEl.remove();
   guyEl.style.display = "inline";
-  getGuyBounds()
+  getGuyBounds();
   releaseBats();
 }
 
@@ -429,7 +429,9 @@ function decHealth(e) {
   gunFlash();
   delayFire();
   batObjs[e.target.id].health -= guy.attack;
-  if (batObjs[e.target.id].health <= 5){batEls[e.target.id].src = "assets/bat_damaged.gif";}
+  if (batObjs[e.target.id].health <= 5) {
+    batEls[e.target.id].src = "assets/bat_damaged.gif";
+  }
   if (batObjs[e.target.id].health <= 0) {
     batEls[e.target.id].remove();
     score++;
@@ -439,8 +441,9 @@ function decHealth(e) {
 }
 
 function playAudio(audio) {
+  if(sound){
   audio.currentTime = 0;
-  audio.play();
+  audio.play();}
 }
 
 function isHeld(keyCode) {
@@ -460,37 +463,46 @@ function delayFire() {
   });
 }
 
-function getGuyBounds(){
-  guy.left= guyEl.getBoundingClientRect().left
-  guy.right= guyEl.getBoundingClientRect().right
-  guy.top= guyEl.getBoundingClientRect().top
-  guy.bottom= guyEl.getBoundingClientRect().bottom
+function getGuyBounds() {
+  guy.left = guyEl.getBoundingClientRect().left;
+  guy.right = guyEl.getBoundingClientRect().right;
+  guy.top = guyEl.getBoundingClientRect().top;
+  guy.bottom = guyEl.getBoundingClientRect().bottom;
 }
 
-function initAttack(){
-  guy.speed = 50
-  defense = false
-  for (gun of guns){
-    gun.El.style.display = 'flex'
-    console.log(gun.El)
+function initAttack() {
+  guy.speed = 50;
+  defense = false;
+  for (gun of guns) {
+    gun.El.style.display = "flex";
+    console.log(gun.El);
   }
-  chooseWeapon(49)
-  document.removeEventListener('keydown', guyMoveDefenseMode)
-  guyMove()
+  chooseWeapon(49);
+  document.removeEventListener("keydown", guyMoveDefenseMode);
+  guyMove();
 }
 
-function initDefense(){
-  guy.speed = 25
-  defense = true
-for (gun of guns){
-gun.El.style.display = 'none'
-}
-document.addEventListener('keydown', guyMoveDefenseMode)
-if(guyMoveId === true){clearInterval(guyMoveId)}
+function initDefense() {
+  guy.speed = 25;
+  defense = true;
+  for (gun of guns) {
+    gun.El.style.display = "none";
+  }
+  document.addEventListener("keydown", guyMoveDefenseMode);
+  if (guyMoveId === true) {
+    clearInterval(guyMoveId);
+  }
 }
 
-
-//add bandaged bat gif when health below 5- waiting on asset
+function toggleSound() {
+  if (sound) {
+    soundIconEl.src = "assets/nosound.png";
+    sound = false;
+  } else {
+    soundIconEl.src = "assets/sound.png";
+    sound = true;
+  }
+}
 
 //stretch:
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
