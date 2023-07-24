@@ -1,9 +1,12 @@
 //variables
-// let headerHeight = 120;
-// let footerHeight = 75;
-//let guySpeedFreq = 100; // frequency of motion when held
-const mainEl = document.querySelector("main");
-let mousePos = [];
+
+/////environment
+const mainEl = document.querySelector("main"); //needs top be up top for classes to determine boundaries
+let mousePos = []; // helpful for debugging, not in use for game
+let bounds = {};//to be filled with mainEl boundary info with getBounds()
+
+
+////bat stuff
 let batCount = 0;
 let batObjs = [];//// to be filled with bat objects as generated (ID matches position in batEls array)
 let batEls = [];
@@ -13,14 +16,32 @@ let batSpeedMin = 3; // pixels moved per motion
 let batSpeedRange = 3
 let batMoveTimeId;
 let batDim = 50;//Bat dimensions (h === w)
+
+///state
 const maxLives = 3;
 let lives = maxLives;
-let heldKey;
 let score = 0;
+const powerTime = 10000;//Length of powerups
+let defense = false; //store whether or not we are in defense mode
+let sound = true; //store whether or not player wants sounds on
+
+
+////guy
+let guyMoveId; //timer name for guyMove()
+let heldKeys = []//hold and array of keys held down to be used by guyMove attack mode
+const guy = {
+  speed: 25,
+  speedFreq: 100,
+  width: 50,
+  height: 100,
+  xTrans: 0,
+  yTrans: 0,
+  attack: 0,
+};
+
+////weapons
 let fireDelay;
-let bounds = {};//to be filled with bmainEl oundary info with getBounds()
 let attackMult = 1; //Attack multiplier to be changed by power up
-let powerTime = 10000;//Length of powerups
 let fireDelayMult = 1;//fire rate multiplier to be changed by powerup
 const pistolAudio = new Audio("assets/pistol.mp3");
 const rifleAudio = new Audio("assets/rifle.mp3");
@@ -28,9 +49,8 @@ const bazookaAudio = new Audio("assets/bazooka.mp3");
 const bonkAudio = new Audio("assets/bonk.mp3");
 const hurtAudio = new Audio("assets/hurt.mp3");
 let gunSelected; //store gun selection
-let defense = false; //store whether or not we are in defense mode
-let guyMoveId; //timer name for guyMove()
-let sound = true; //store whether or not player wants sounds on
+
+////powerups
 let powerUpCount = 0; // keep track of powerUps generated so each new one can be assigned a unique ID
 let powerUpEls = [];// to be filled with powerUp elements as generated
 let powerUpObjs = [];//to be filled with power up Objects as generated (ID matches position in powerupEls array)
@@ -41,7 +61,10 @@ let invincibleLoop//declare name of powerup loop to avoid glitching
 let increaseAttackLoop//declare name of powerup loop to avoid glitching 
 let increaseFireRateLoop //declare name of powerup loop to avoid glitching 
 
-//Define Gun class, define guns, store in dictionary for later use
+
+
+//////classes///////
+////Define Gun class, define guns, store in dictionary for later use
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
     this.name = name;
@@ -57,18 +80,9 @@ const rifle = new Gun(500, 4, "rifle", rifleAudio);
 const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio);
 let guns = [pistol, rifle, bazooka];
 
-//Define guy properties
-let guy = {
-  speed: 25,
-  speedFreq: 100,
-  width: 50,
-  height: 100,
-  xTrans: 0,
-  yTrans: 0,
-  attack: 0,
-};
 
-//Define Bat class
+
+////Define Bat class
 class Bat {
   constructor(batCount) {
     this.health = 10;
@@ -187,7 +201,7 @@ const increaseFireRate = new PowerUp("increaseFireRate", increaseFireRateFunc);
 const extraLife = new PowerUp("extraLife", extraLifeFunc);
 let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
-//cached elements
+////////////cached elements////////////
 pistolEl = document.querySelector(".pistol");
 rifleEl = document.querySelector(".rifle");
 bazookaEl = document.querySelector(".bazooka");
@@ -201,15 +215,19 @@ startBtnEl = document.querySelector(".attack");
 defenseBtnEl = document.querySelector(".defense");
 soundIconEl = document.querySelector(".sound-icon");
 
-//event listeners
+//////////event listeners//////////////
 document.addEventListener("mousemove", storeMouse);
 document.addEventListener("keydown", buttonPress);
-document.addEventListener("keyup", buttonUnPress);
 startBtnEl.addEventListener("click", startGame);
 defenseBtnEl.addEventListener("click", startGameDefenseMode);
 soundIconEl.addEventListener("click", toggleSound);
+document.addEventListener('keydown', printKeyCode)
+document.addEventListener('keyup', printKeyCodeUP)
 
-//functions
+/////////////////functions////////////////
+
+
+//////initializations//////
 function init() {
   getBounds(mainEl.getBoundingClientRect());
   guy.xTrans = 0;
@@ -219,6 +237,51 @@ function init() {
   lives = maxLives;
   render();
 }
+
+function startGame() {
+  init();
+  initAttack();
+  score = 0;
+  renderScore();
+  modalEl.remove();
+  guyEl.style.display = "inline";
+  getGuyBounds();
+  releaseBats();
+}
+function startGameDefenseMode() {
+  init();
+  initDefense();
+  score = 0;
+  renderScore();
+  modalEl.remove();
+  guyEl.style.display = "inline";
+  getGuyBounds();
+  releaseBats();
+}
+
+function initDefense() {
+  guy.speed = 25;
+  defense = true;
+  for (gun of guns) {
+    gun.El.style.display = "none";
+  }
+  document.addEventListener("keydown", guyMoveDefenseMode);
+  if (guyMoveId === true) {
+    clearInterval(guyMoveId);
+  }
+}
+
+function initAttack() {
+  guy.speed = 50;
+  defense = false;
+  for (gun of guns) {
+    gun.El.style.display = "flex";
+  }
+  chooseWeapon(49);
+  document.removeEventListener("keydown", guyMoveDefenseMode);
+  guyMove();
+}
+
 
 function getBounds(main) {
   bounds = {
@@ -231,10 +294,16 @@ function getBounds(main) {
   };
 }
 
+//for debugging only
+function storeMouse(e) {
+  mousePos[0] = e.clientX;
+  mousePos[1] = e.clientY;
+  //console.log(mousePos)
+}
+
+
+//////weapons//////
 function buttonPress(e) {
-  if (!defense) {
-    isHeld(e.keyCode);
-  }
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
@@ -242,11 +311,6 @@ function buttonPress(e) {
   }
 }
 
-function storeMouse(e) {
-  mousePos[0] = e.clientX;
-  mousePos[1] = e.clientY;
-  //console.log(mousePos)
-}
 
 function chooseWeapon(num) {
   num < 60 ? (num -= 48) : (num -= 96);
@@ -256,6 +320,25 @@ function chooseWeapon(num) {
   gunSelectBorder(gunSelected);
 }
 
+function gunSelectBorder(gun) {
+  guns.forEach(function (w) {
+    w.imgEl.classList.remove("selected");
+    w.imgEl.id = ''
+  });
+  gun.imgEl.classList.add("selected");
+}
+
+function gunFlash(gun) {
+  const unFlash = function () {
+    gunSelected.imgEl.id = "";
+  };
+  playAudio(gunSelected.audio);
+  gunSelected.imgEl.id = "fired";
+  setTimeout(unFlash, fireDelay * fireDelayMult);
+}
+
+
+//////move the guy/////
 //DEFENSE MODE GUYMOVE()
 function guyMoveDefenseMode(e) {
   num = e.keyCode;
@@ -279,22 +362,33 @@ function guyMoveDefenseMode(e) {
   renderGuy();
   getGuyBounds();
 }
+
+function delayFire() {
+  batEls.forEach(function (batEl) {
+    batEl.removeEventListener("mousedown", decHealth);
+    setTimeout(function () {
+      batEl.addEventListener("mousedown", decHealth);
+    }, fireDelay * fireDelayMult);
+  });
+}
+
+//ATTACK MODE GUY MOVE
 function guyMove() {
   guyMoveId = setInterval(function () {
     getGuyBounds();
-    if (heldKey === 37 || heldKey === 65) {
+    if (heldKeys.includes(37) || heldKeys.includes(65)) {
       if (guy.left - guy.width > bounds.left) {
         guy.xTrans -= guy.speed;
       }
-    } else if (heldKey === 38 || heldKey === 87) {
+    } if (heldKeys.includes(38) || heldKeys.includes(87)) {
       if (guy.top > bounds.top) {
         guy.yTrans -= guy.speed;
       }
-    } else if (heldKey === 39 || heldKey === 68) {
+    }  if (heldKeys.includes(39) || heldKeys.includes(68)) {
       if (guy.right + guy.width / 2 < bounds.right) {
         guy.xTrans += guy.speed;
       }
-    } else if (heldKey === 40 || heldKey === 83) {
+    }  if (heldKeys.includes(40) || heldKeys.includes(83)) {
       if (guy.bottom + guy.height / 2 < bounds.bottom) {
         guy.yTrans += guy.speed;
       }
@@ -303,23 +397,16 @@ function guyMove() {
   }, guy.speedFreq);
 }
 
-function gunSelectBorder(gun) {
-  guns.forEach(function (w) {
-    w.imgEl.classList.remove("selected");
-    w.imgEl.id = ''
-  });
-  gun.imgEl.classList.add("selected");
+function getGuyBounds() {
+  guy.left = guyEl.getBoundingClientRect().left;
+  guy.right = guyEl.getBoundingClientRect().right;
+  guy.top = guyEl.getBoundingClientRect().top;
+  guy.bottom = guyEl.getBoundingClientRect().bottom;
 }
 
-function gunFlash(gun) {
-  const unFlash = function () {
-    gunSelected.imgEl.id = "";
-  };
-  playAudio(gunSelected.audio);
-  gunSelected.imgEl.id = "fired";
-  setTimeout(unFlash, fireDelay * fireDelayMult);
-}
 
+
+///////detections//////
 function onBorder(x, y) {
   if (x < bounds.left) {
     return "left";
@@ -337,6 +424,23 @@ function topBottom() {
   return y === 0 ? 0 : bounds.bottom - batDim * 3.5;
 }
 
+function collide(arr, id) {
+  if (
+    arr[id].getBoundingClientRect().left <
+      guyEl.getBoundingClientRect().right &&
+    arr[id].getBoundingClientRect().right >
+      guyEl.getBoundingClientRect().left &&
+    arr[id].getBoundingClientRect().bottom >
+      guyEl.getBoundingClientRect().top &&
+    arr[id].getBoundingClientRect().top < guyEl.getBoundingClientRect().bottom
+  ) {
+    return true;
+  }
+}
+
+
+
+//////bat stuff//////
 function renderBat() {
   batEls.forEach(function (batEl, idx) {
     batEl.style.transform = `translate(${batObjs[idx].xTrans}px, ${batObjs[idx].yTrans}px)`;
@@ -360,6 +464,7 @@ function releaseBats() {
   }, batGenFreq);
 }
 
+/////powerUps/////
 function newPowerUp() {
   if(defense){x = Math.floor(Math.random() * defensivePowerUps)}
   else{x = Math.floor(Math.random() * powerUpList.length)};
@@ -381,6 +486,7 @@ function newPowerUp() {
   powerUpCount++;
 }
 
+////////renders//////
 function render() {
   renderBat();
   renderLives();
@@ -410,7 +516,12 @@ function renderLives() {
 function renderScore() {
   scoreEl.innerText = `Score: ${score}`;
 }
+function renderGuy() {
+  guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
+}
 
+
+//////state changes/////
 function loseLife() {
   lives -= 1;
   playAudio(hurtAudio);
@@ -440,45 +551,6 @@ function gameOver() {
   mainEl.appendChild(modalEl);
 }
 
-function startGame() {
-  init();
-  initAttack();
-  score = 0;
-  renderScore();
-  modalEl.remove();
-  guyEl.style.display = "inline";
-  getGuyBounds();
-  releaseBats();
-}
-function startGameDefenseMode() {
-  init();
-  initDefense();
-  score = 0;
-  renderScore();
-  modalEl.remove();
-  guyEl.style.display = "inline";
-  getGuyBounds();
-  releaseBats();
-}
-
-function collide(arr, id) {
-  if (
-    arr[id].getBoundingClientRect().left <
-      guyEl.getBoundingClientRect().right &&
-    arr[id].getBoundingClientRect().right >
-      guyEl.getBoundingClientRect().left &&
-    arr[id].getBoundingClientRect().bottom >
-      guyEl.getBoundingClientRect().top &&
-    arr[id].getBoundingClientRect().top < guyEl.getBoundingClientRect().bottom
-  ) {
-    return true;
-  }
-}
-
-function renderGuy() {
-  guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
-}
-
 function decHealth(e) {
   gunFlash();
   delayFire();
@@ -494,60 +566,6 @@ function decHealth(e) {
   render();
 }
 
-function playAudio(audio) {
-  if (sound) {
-    audio.currentTime = 0;
-    audio.play();
-  }
-}
-
-function isHeld(keyCode) {
-  heldKey = keyCode;
-}
-
-function buttonUnPress(keyCode) {
-  heldKey = null;
-}
-
-function delayFire() {
-  batEls.forEach(function (batEl) {
-    batEl.removeEventListener("mousedown", decHealth);
-    setTimeout(function () {
-      batEl.addEventListener("mousedown", decHealth);
-    }, fireDelay * fireDelayMult);
-  });
-}
-
-function getGuyBounds() {
-  guy.left = guyEl.getBoundingClientRect().left;
-  guy.right = guyEl.getBoundingClientRect().right;
-  guy.top = guyEl.getBoundingClientRect().top;
-  guy.bottom = guyEl.getBoundingClientRect().bottom;
-}
-
-function initAttack() {
-  guy.speed = 50;
-  defense = false;
-  for (gun of guns) {
-    gun.El.style.display = "flex";
-  }
-  chooseWeapon(49);
-  document.removeEventListener("keydown", guyMoveDefenseMode);
-  guyMove();
-}
-
-function initDefense() {
-  guy.speed = 25;
-  defense = true;
-  for (gun of guns) {
-    gun.El.style.display = "none";
-  }
-  document.addEventListener("keydown", guyMoveDefenseMode);
-  if (guyMoveId === true) {
-    clearInterval(guyMoveId);
-  }
-}
-
 function toggleSound() {
   if (sound) {
     soundIconEl.src = "assets/nosound.png";
@@ -555,6 +573,17 @@ function toggleSound() {
   } else {
     soundIconEl.src = "assets/sound.png";
     sound = true;
+  }
+}
+
+
+
+
+//////do things/////
+function playAudio(audio) {
+  if (sound) {
+    audio.currentTime = 0;
+    audio.play();
   }
 }
 
@@ -572,6 +601,13 @@ function randomInY() {
   );
 }
 
+
+
+
+
+
+
+//////power ups
 function invincibleFunc() {
   clearInterval(invincibleLoop)
   invincibility = true;
@@ -615,9 +651,20 @@ function extraLifeFunc() {
   renderLives()
 }
 
-//MVP:
-//clean up where variables get initialized, which are constant and which can change, group by purpose, 
+////handle events/////
+function printKeyCode(e){
+  if(!heldKeys.includes(e.keyCode)){
+    heldKeys.push(e.keyCode)
+  }
+}
 
-// nice touches: indicator img for power ups with countdown
-//heldkey mutliple keys (maybe 4 event listeners one for each key?)
-//figure out how to store high score
+function printKeyCodeUP(e){
+  heldKeys.splice(heldKeys.indexOf(e.keyCode), 1)
+}
+
+
+  //TODO:
+  //MAKE A BEAUTIFUL README
+  
+  
+  //figure out how to store high score
