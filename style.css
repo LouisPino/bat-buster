@@ -132,7 +132,7 @@ footer img {
 
 .bat{
   max-height: 50px;
-  transition: ease 100ms;
+  /* transition: ease 100ms; */
   position: absolute;
 }
 

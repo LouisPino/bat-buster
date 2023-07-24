@@ -8,8 +8,9 @@ let batCount = 0;
 let batObjs = [];//// to be filled with bat objects as generated (ID matches position in batEls array)
 let batEls = [];
 let batGenFreq = 3000;
-let batSpeedFreq = 100; //frequency of motions
-let batSpeed = 20; // pixels moved per motion
+let batSpeedFreq = 15; //frequency of motions
+let batSpeedMin = 3; // pixels moved per motion
+let batSpeedRange = 3
 let batMoveTimeId;
 let batDim = 50;//Bat dimensions (h === w)
 const maxLives = 3;
@@ -71,7 +72,7 @@ let guy = {
 class Bat {
   constructor(batCount) {
     this.health = 10;
-    this.speed = Math.floor(Math.random() * 4 + batSpeed);
+    this.speed = Math.floor(Math.random() * batSpeedRange + batSpeedMin);
     this.height = 50;
     this.width = 50;
     this.xTrans = randomInX();
@@ -115,7 +116,6 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "left"
       ) {
-        q.xTrans += batSpeed * 2.5;
         xDir *= -1;
       }
       if (
@@ -124,7 +124,6 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
-        q.xTrans -= batSpeed * 2.5;
         xDir *= -1;
       }
       if (
@@ -133,7 +132,6 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y
         ) === "top"
       ) {
-        q.yTrans += batSpeed * 2.5;
         yDir *= -1;
       }
       if (
@@ -142,7 +140,6 @@ class Bat {
           batEls[q.id].getBoundingClientRect().y + batDim
         ) === "bottom"
       ) {
-        q.yTrans -= batSpeed * 2.5;
         yDir *= -1;
       }
     }, batSpeedFreq);
@@ -218,8 +215,6 @@ function init() {
   guy.xTrans = 0;
   guy.yTrans = 0;
   batCount = 0;
-  //batObjs = [];
-  //batEls = [];
   batGenFreq = 3000;
   lives = maxLives;
   render();
@@ -311,6 +306,7 @@ function guyMove() {
 function gunSelectBorder(gun) {
   guns.forEach(function (w) {
     w.imgEl.classList.remove("selected");
+    w.imgEl.id = ''
   });
   gun.imgEl.classList.add("selected");
 }
@@ -430,8 +426,6 @@ function gameOver() {
   for (powerUpEl of powerUpEls){
     powerUpEl.remove()
   }
-  // powerUpEls = [];
-  // powerUpObjs = [];
    for (i = 0; i < batCount; i++) {
      batEls[i].remove();
    }
@@ -443,7 +437,6 @@ function gameOver() {
   modalPEl.innerHTML =
     "The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.<br> <br> <br><h2>Play Again?</h2> ";
   modalPEl.style.textAlign = "center";
-  //startBtnEl.innerHTML = "Play Again?";
   mainEl.appendChild(modalEl);
 }
 
@@ -467,21 +460,6 @@ function startGameDefenseMode() {
   getGuyBounds();
   releaseBats();
 }
-//OLD COLLIDE
-// function collide(q) {
-//   if (
-//     batEls[q.id].getBoundingClientRect().left<
-//       guyEl.getBoundingClientRect().right &&
-//     batEls[q.id].getBoundingClientRect().right >
-//       guyEl.getBoundingClientRect().left &&
-//     batEls[q.id].getBoundingClientRect().bottom >
-//       guyEl.getBoundingClientRect().top &&
-//     batEls[q.id].getBoundingClientRect().top <
-//       guyEl.getBoundingClientRect().bottom
-//   ) {
-//     return true;
-//   }
-// }
 
 function collide(arr, id) {
   if (
@@ -511,7 +489,6 @@ function decHealth(e) {
   if (batObjs[e.target.id].health <= 0) {
     batEls[e.target.id].remove();
     score++;
-    //newPowerUp();
     playAudio(bonkAudio);
   }
   render();
@@ -596,7 +573,6 @@ function randomInY() {
 }
 
 function invincibleFunc() {
- //console.log("INVINCIBLE!");
   clearInterval(invincibleLoop)
   invincibility = true;
   guyEl.src = 'assets/guyInvincible.gif'
@@ -608,7 +584,6 @@ function invincibleFunc() {
 
 
 function increaseAttackFunc(x) {
-  //console.log("INCREASE ATTACK!");
   clearInterval(increaseAttackLoop)
   x = 2;
   attackMult = x;
@@ -620,7 +595,6 @@ function increaseAttackFunc(x) {
 function increaseFireRateFunc(x) {
   clearInterval(increaseFireRateLoop)
   x = 0.5;
- // console.log("INCREASE FIRE RATE!");
   fireDelayMult = x;
    increaseFireRateLoop = setTimeout(function () {
     fireDelayMult = 1;
@@ -644,15 +618,6 @@ function extraLifeFunc() {
 //MVP:
 //clean up where variables get initialized, which are constant and which can change, group by purpose, 
 
-
-
-//glitches want fixing-
-//fix first bat glitching out
-
-// nice touches: indicator img for power ups
-//flash goes away when switching
-
-
-//stretch:
+// nice touches: indicator img for power ups with countdown
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
 //figure out how to store high score
