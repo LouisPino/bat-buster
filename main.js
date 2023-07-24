@@ -19,6 +19,9 @@ let heldKey;
 let score = 0;
 let fireDelay;
 let bounds = {};
+let attackMult = 1
+let powerTime
+let fireDelayMult
 const pistolAudio = new Audio("assets/pistol.mp3");
 const rifleAudio = new Audio("assets/rifle.mp3");
 const bazookaAudio = new Audio("assets/bazooka.mp3");
@@ -59,9 +62,7 @@ class Bat {
     this.speed = Math.floor(Math.random() * 4 + batSpeed);
     this.height = 50;
     this.width = 50;
-    this.xTrans = Math.floor(
-      Math.random() * (window.innerWidth - borderWidth * 2 - this.width)
-    );
+    this.xTrans = randomInX()
     this.yTrans = topBottom();
     this.id = batCount;
   }
@@ -267,7 +268,6 @@ function guyMove() {
     }
     renderGuy();
     getGuyBounds();
-    console.log("guyM oveRunning");
   }, guySpeedFreq);
 }
 
@@ -285,7 +285,7 @@ function gunFlash(gun) {
   gunUnflasher = gun;
   playAudio(gunSelected.audio);
   gunSelected.El.id = "fired";
-  setTimeout(unFlash, fireDelay);
+  setTimeout(unFlash, fireDelay*fireDelayMult);
 }
 
 function onBorder(x, y) {
@@ -428,7 +428,8 @@ function renderGuy() {
 function decHealth(e) {
   gunFlash();
   delayFire();
-  batObjs[e.target.id].health -= guy.attack;
+  console.log(guy.attack)
+  batObjs[e.target.id].health -= guy.attack*attackMult;
   if (batObjs[e.target.id].health <= 5) {
     batEls[e.target.id].src = "assets/bat_damaged.gif";
   }
@@ -459,7 +460,7 @@ function delayFire() {
     batEl.removeEventListener("mousedown", decHealth);
     setTimeout(function () {
       batEl.addEventListener("mousedown", decHealth);
-    }, fireDelay);
+    }, fireDelay*fireDelayMult);
   });
 }
 
@@ -475,7 +476,6 @@ function initAttack() {
   defense = false;
   for (gun of guns) {
     gun.El.style.display = "flex";
-    console.log(gun.El);
   }
   chooseWeapon(49);
   document.removeEventListener("keydown", guyMoveDefenseMode);
@@ -504,11 +504,53 @@ function toggleSound() {
   }
 }
 
+function randomInX(){
+return Math.floor(Math.random()* mainEl.getBoundingClientRect().width)
+}
+
+function randomInY(){
+return Math.floor(Math.random()* mainEl.getBoundingClientRect().height + mainEl.getBoundingClientRect().top)
+}
+
 //stretch:
+//power ups
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
-//sound toggle
 //fine tune collide
+
 
 //bugs:
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
+
+
+
+//add power ups, one to make shots stronger, one to make you invincible
+
+//if batCount % bonusFreq === 0 {create and place bonus item randomly. Y between bounds.top and bottom, X betweeen left and right}
+
+//power up class - this.effect = function it does
+//this.name =
+//this.src = 'assets/###.png/
+//this.xTrans = 
+//this.yTrans =
+//give powerup the collide() method
+
+//need to refactor collide so it can be used by anything
+
+
+
+//invincible(){
+//invincible = true // when true, batCreate adds score when collide, don't call lifeLost on collide
+//add class invincible, use te rainbow gradient as border
+//setTimeout(invincible = false, powerTime)
+//}
+
+//attackMultiplier(x){
+//multiplier = x (2 for now)
+//setTimeout(multiplier = 1, powerTime)
+//}
+
+//fireRateIncrease(x){
+//fireDelayMult = x (.5 for now)
+//setTimeout(fireDelayMult = 1, powerTime)
+//}

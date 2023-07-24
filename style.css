@@ -58,7 +58,6 @@ main {
 .instructions {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
   justify-content: end;
   text-align: center;
   line-height: 25px;
