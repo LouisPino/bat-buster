@@ -470,7 +470,7 @@ function initAttack(){
   guy.speed = 50
   defense = false
   for (gun of guns){
-    gun.El.style.display = 'inline'
+    gun.El.style.display = 'flex'
     console.log(gun.El)
   }
   chooseWeapon(49)
@@ -489,14 +489,11 @@ if(guyMoveId === true){clearInterval(guyMoveId)}
 }
 
 
-//MVP
-//can still kill on defense mode
+//add bandaged bat gif when health below 5- waiting on asset
 
-
-//stretch
+//stretch:
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
 //sound toggle
 //fine tune collide
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
-
