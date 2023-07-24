@@ -191,3 +191,8 @@ font-size: 1.2rem;
   }
   }
 
+.power-up{
+  max-height: 50px;
+  position: absolute;
+}
+

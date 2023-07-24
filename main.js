@@ -1,4 +1,5 @@
 //variables
+const mainEl = document.querySelector("main");
 let mousePos = [];
 let headerHeight = 120;
 let footerHeight = 75;
@@ -29,6 +30,8 @@ let gunSelected;
 let defense = false;
 let guyMoveId;
 let sound = true;
+let powerUpCount = 0
+let powerUpEls = []
 
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
@@ -85,7 +88,7 @@ class Bat {
       q.yTrans += q.speed * yDir;
 
       renderBat();
-      if (collide(q)) {
+      if (collide(batEls, q.id)) {
         batEls[q.id].remove();
         loseLife();
       }
@@ -133,7 +136,7 @@ class Bat {
     batEls[batCount] = document.createElement("img");
     batEls[batCount].classList.add("bat");
     batEls[batCount].src = "assets/bat.gif";
-    batEls[batCount].draggable = "false";
+    //batEls[batCount].draggable = "false";
     batEls[batCount].id = `${batCount}`;
     batEls[
       batCount
@@ -148,10 +151,30 @@ class Bat {
     batCount++;
     render();
   }
+
+ 
 }
 
+class PowerUp {
+constructor(name, func ){
+    this.name = name
+    this.src = `assets/${name}.png`
+    this.effect = func
+    this.xTrans = randomInX()
+    this.yTrans = randomInY()
+}
+}
+
+const invincible = new PowerUp('invincible', invincibleFunc());
+const increaseAttack = new PowerUp('increaseAttack', increaseAttackFunc());
+const increaseFireRate = new PowerUp('increaseFireRate', increaseFireRateFunc());
+let powerUpObjs = [invincible, increaseAttack, increaseFireRate];
+
+
+
+
 //cached elements
-mainEl = document.querySelector("main");
+
 pistolEl = document.querySelector(".pistol");
 rifleEl = document.querySelector(".rifle");
 bazookaEl = document.querySelector(".bazooka");
@@ -245,11 +268,11 @@ function guyMoveDefenseMode(e) {
   }
   renderGuy();
   getGuyBounds();
+  if(collide(powerUpEls, )){}
 }
 function guyMove() {
   guyMoveId = setInterval(function () {
     getGuyBounds();
-    console.log(guy.left)
     if (heldKey === 37 || heldKey === 65) {
       if (guy.left - guy.width > bounds.left) {
         guy.xTrans -= guy.speed;
@@ -326,6 +349,19 @@ function releaseBats() {
     batObjs[batCount - 1].batMove();
     increaseBatGenFreq(batCount);
   }, batGenFreq);
+}
+
+function newPowerUp(){
+ x = Math.floor(Math.random()*powerUpObjs.length)
+ console.log(x)
+ powerUpEls[powerUpCount] = document.createElement('img')
+ powerUpEls[powerUpCount].classList.add('power-up')
+ powerUpEls[powerUpCount].src = powerUpObjs[x].src
+ xTrans = randomInX()
+ yTrans = randomInY()
+ powerUpEls[powerUpCount].style.transform = `translate(${xTrans}px, ${yTrans}px)`;
+mainEl.appendChild(powerUpEls[powerUpCount])
+ powerUpCount ++
 }
 
 function render() {
@@ -405,21 +441,39 @@ function startGameDefenseMode() {
   getGuyBounds();
   releaseBats();
 }
+//OLD COLLIDE
+// function collide(q) {
+//   if (
+//     batEls[q.id].getBoundingClientRect().left<
+//       guyEl.getBoundingClientRect().right &&
+//     batEls[q.id].getBoundingClientRect().right >
+//       guyEl.getBoundingClientRect().left &&
+//     batEls[q.id].getBoundingClientRect().bottom >
+//       guyEl.getBoundingClientRect().top &&
+//     batEls[q.id].getBoundingClientRect().top <
+//       guyEl.getBoundingClientRect().bottom
+//   ) {
+//     return true;
+//   }
+// }
 
-function collide(q) {
+function collide(arr, id) {
   if (
-    batEls[q.id].getBoundingClientRect().x - q.width / 2 <
-      guyEl.getBoundingClientRect().x &&
-    batEls[q.id].getBoundingClientRect().x + q.width / 2 >
-      guyEl.getBoundingClientRect().x &&
-    batEls[q.id].getBoundingClientRect().y >
-      guyEl.getBoundingClientRect().y - guy.height &&
-    batEls[q.id].getBoundingClientRect().y - q.height <
-      guyEl.getBoundingClientRect().y
+    arr[id].getBoundingClientRect().left<
+      guyEl.getBoundingClientRect().right &&
+    arr[id].getBoundingClientRect().right >
+      guyEl.getBoundingClientRect().left &&
+    arr[id].getBoundingClientRect().bottom >
+      guyEl.getBoundingClientRect().top &&
+    arr[id].getBoundingClientRect().top <
+      guyEl.getBoundingClientRect().bottom
   ) {
     return true;
   }
 }
+
+
+
 
 function renderGuy() {
   guyEl.style.transform = `translate(${guy.xTrans}px, ${guy.yTrans}px)`;
@@ -435,6 +489,7 @@ function decHealth(e) {
   if (batObjs[e.target.id].health <= 0) {
     batEls[e.target.id].remove();
     score++;
+    newPowerUp()
     playAudio(bonkAudio);
   }
   render();
@@ -516,11 +571,10 @@ return Math.floor(Math.random()* (mainEl.getBoundingClientRect().height*.9) + (m
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
 //clean up where variables get initialized, which are constant and which can change
-
+//new element function for new bats and power ups and such?
 
 //stretch:
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
-//fine tune collide
 //figure out how to store high score
 
 
@@ -530,29 +584,22 @@ return Math.floor(Math.random()* (mainEl.getBoundingClientRect().height*.9) + (m
 
 //if batCount % bonusFreq === 0 {create and place bonus item randomly. Y between bounds.top and bottom, X betweeen left and right}
 
-//power up class - this.effect = function it does
-//this.name =
-//this.src = 'assets/###.png/
-//this.xTrans = 
-//this.yTrans =
-//give powerup the collide() method
-
-//need to refactor collide so it can be used by anything
+//call collide()
 
 
 
-//invincible(){
+function invincibleFunc(){}
 //invincible = true // when true, batCreate adds score when collide, don't call lifeLost on collide
 //add class invincible, use te rainbow gradient as border
 //setTimeout(invincible = false, powerTime)
 //}
 
-//attackMultiplier(x){
+function increaseAttackFunc(x){}
 //multiplier = x (2 for now)
 //setTimeout(multiplier = 1, powerTime)
 //}
 
-//fireRateIncrease(x){
+function increaseFireRateFunc(x){}
 //fireDelayMult = x (.5 for now)
 //setTimeout(fireDelayMult = 1, powerTime)
 //}
