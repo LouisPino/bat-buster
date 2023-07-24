@@ -19,7 +19,7 @@ let score = 0;
 let fireDelay;
 let bounds = {};
 let attackMult = 1
-let powerTime
+let powerTime = 10000
 let fireDelayMult = 1
 const pistolAudio = new Audio("assets/pistol.mp3");
 const rifleAudio = new Audio("assets/rifle.mp3");
@@ -32,6 +32,8 @@ let guyMoveId;
 let sound = true;
 let powerUpCount = 0
 let powerUpEls = []
+let powerUpObjs = []
+let invincibilty = false
 
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
@@ -156,19 +158,24 @@ class Bat {
 }
 
 class PowerUp {
-constructor(name, func ){
+constructor(name, func){
     this.name = name
     this.src = `assets/${name}.png`
     this.effect = func
     this.xTrans = randomInX()
     this.yTrans = randomInY()
 }
+checkCollision(){
+  let q = this
+  //console.log(q)
+  checkPowerUpCollision(q)
+}
 }
 
-const invincible = new PowerUp('invincible', invincibleFunc());
-const increaseAttack = new PowerUp('increaseAttack', increaseAttackFunc());
-const increaseFireRate = new PowerUp('increaseFireRate', increaseFireRateFunc());
-let powerUpObjs = [invincible, increaseAttack, increaseFireRate];
+const invincible = new PowerUp('invincible', invincibleFunc);
+const increaseAttack = new PowerUp('increaseAttack', increaseAttackFunc);
+const increaseFireRate = new PowerUp('increaseFireRate', increaseFireRateFunc);
+let powerUpList = [invincible, increaseAttack, increaseFireRate];
 
 
 
@@ -268,7 +275,6 @@ function guyMoveDefenseMode(e) {
   }
   renderGuy();
   getGuyBounds();
-  if(collide(powerUpEls, )){}
 }
 function guyMove() {
   guyMoveId = setInterval(function () {
@@ -352,17 +358,18 @@ function releaseBats() {
 }
 
 function newPowerUp(){
- x = Math.floor(Math.random()*powerUpObjs.length)
- console.log(x)
- powerUpEls[powerUpCount] = document.createElement('img')
- powerUpEls[powerUpCount].classList.add('power-up')
- powerUpEls[powerUpCount].src = powerUpObjs[x].src
- xTrans = randomInX()
- yTrans = randomInY()
- powerUpEls[powerUpCount].style.transform = `translate(${xTrans}px, ${yTrans}px)`;
-mainEl.appendChild(powerUpEls[powerUpCount])
- powerUpCount ++
-}
+  x = Math.floor(Math.random()*powerUpList.length)
+  powerUpEls[powerUpCount] = document.createElement('img')
+  powerUpEls[powerUpCount].classList.add('power-up')
+  powerUpEls[powerUpCount].src = powerUpList[x].src
+  xTrans = randomInX()
+  yTrans = randomInY()
+  powerUpEls[powerUpCount].style.transform = `translate(${xTrans}px, ${yTrans}px)`;
+  powerUpObjs[powerUpCount] = new PowerUp (powerUpList[x].name, powerUpList[x].effect)
+  powerUpObjs[powerUpCount].id = powerUpCount
+  powerUpObjs[powerUpCount].checkCollision()
+  mainEl.appendChild(powerUpEls[powerUpCount])
+  powerUpCount ++}
 
 function render() {
   renderBat();
@@ -572,6 +579,8 @@ return Math.floor(Math.random()* (mainEl.getBoundingClientRect().height*.9) + (m
 //figure out how to clear batMoveLoop
 //clean up where variables get initialized, which are constant and which can change
 //new element function for new bats and power ups and such?
+//can only do 3 power ups rn
+
 
 //stretch:
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
@@ -584,22 +593,38 @@ return Math.floor(Math.random()* (mainEl.getBoundingClientRect().height*.9) + (m
 
 //if batCount % bonusFreq === 0 {create and place bonus item randomly. Y between bounds.top and bottom, X betweeen left and right}
 
-//call collide()
 
 
-
-function invincibleFunc(){}
+function invincibleFunc(){
+  console.log('INVINCIBLE!')
+  invinciblity = true
+}
 //invincible = true // when true, batCreate adds score when collide, don't call lifeLost on collide
 //add class invincible, use te rainbow gradient as border
 //setTimeout(invincible = false, powerTime)
 //}
 
-function increaseAttackFunc(x){}
-//multiplier = x (2 for now)
-//setTimeout(multiplier = 1, powerTime)
-//}
+function increaseAttackFunc(x){
+  console.log('INCREASE ATTACK!')
+  x = 2
+  attackMult = x
+  setTimeout(function(){attackMult = 1}, powerTime)
+  }
 
-function increaseFireRateFunc(x){}
-//fireDelayMult = x (.5 for now)
-//setTimeout(fireDelayMult = 1, powerTime)
-//}
+
+function increaseFireRateFunc(x){
+  x = .5
+  console.log('INCREASE FIRE RATE!')
+  fireDelayMult = x
+  setTimeout(function(){fireDelayMult = 1}, powerTime)
+  }
+
+
+function checkPowerUpCollision(q){
+  checkPowerUpCollisionId = setInterval(function(){
+    if (collide(powerUpEls, q.id)){
+      powerUpObjs[q.id].effect()
+      powerUpEls[q.id].remove()
+    }
+}, 100)
+}
