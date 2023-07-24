@@ -34,6 +34,8 @@ let powerUpCount = 0;
 let powerUpEls = [];
 let powerUpObjs = [];
 let invincibility = false;
+const powerUpFreq = 2
+const defensivePowerUps = 2
 
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
@@ -157,6 +159,7 @@ class Bat {
       score++;
     }
     batCount++;
+    if(batCount % powerUpFreq === 0){newPowerUp()}
     render();
   }
 }
@@ -171,7 +174,6 @@ class PowerUp {
   }
   checkCollision() {
     let q = this;
-    //console.log(q)
     checkPowerUpCollision(q);
   }
 }
@@ -179,7 +181,8 @@ class PowerUp {
 const invincible = new PowerUp("invincible", invincibleFunc);
 const increaseAttack = new PowerUp("increaseAttack", increaseAttackFunc);
 const increaseFireRate = new PowerUp("increaseFireRate", increaseFireRateFunc);
-let powerUpList = [invincible, increaseAttack, increaseFireRate];
+const extraLife = new PowerUp("extraLife", extraLifeFunc);
+let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
 //cached elements
 
@@ -358,7 +361,8 @@ function releaseBats() {
 }
 
 function newPowerUp() {
-  x = Math.floor(Math.random() * powerUpList.length);
+  if(defense){x = Math.floor(Math.random() * defensivePowerUps)}
+  else{x = Math.floor(Math.random() * powerUpList.length)};
   powerUpEls[powerUpCount] = document.createElement("img");
   powerUpEls[powerUpCount].classList.add("power-up");
   powerUpEls[powerUpCount].src = powerUpList[x].src;
@@ -398,7 +402,7 @@ function renderLives() {
   }
   for (i = 0; i < lives; i++) {
     lifeEls[i] = document.createElement("img");
-    lifeEls[i].src = "assets/heart.png";
+    lifeEls[i].src = "assets/extraLife.png";
     livesDiv.appendChild(lifeEls[i]);
   }
 }
@@ -498,7 +502,7 @@ function decHealth(e) {
   if (batObjs[e.target.id].health <= 0) {
     batEls[e.target.id].remove();
     score++;
-    newPowerUp();
+    //newPowerUp();
     playAudio(bonkAudio);
   }
   render();
@@ -582,22 +586,6 @@ function randomInY() {
   );
 }
 
-//MVP:
-//power ups
-//fix first bat glitching out
-//figure out how to clear batMoveLoop
-//clean up where variables get initialized, which are constant and which can change
-//new element function for new bats and power ups and such?
-//can only do 3 power ups rn
-
-//stretch:
-//heldkey mutliple keys (maybe 4 event listeners one for each key?)
-//figure out how to store high score
-
-//add power ups, one to make shots stronger, one to make you invincible, one reduce fire rate
-
-//if batCount % bonusFreq === 0 {create and place bonus item randomly. Y between bounds.top and bottom, X betweeen left and right}
-
 function invincibleFunc() {
   console.log("INVINCIBLE!");
   invincibility = true;
@@ -605,9 +593,7 @@ function invincibleFunc() {
     invincibility = false;
   }, powerTime);
 }
-//invincible = true // when true, batCreate adds score when collide, don't call lifeLost on collide
-//add class invincible, use te rainbow gradient as border
-//}
+
 
 function increaseAttackFunc(x) {
   console.log("INCREASE ATTACK!");
@@ -635,3 +621,18 @@ function checkPowerUpCollision(q) {
     }
   }, 100);
 }
+
+function extraLifeFunc() {
+  lives ++
+  renderLives()
+}
+
+//MVP:
+//fix first bat glitching out
+//figure out how to clear batMoveLoop
+//clean up where variables get initialized, which are constant and which can change
+//add invincible gif of guy flashing
+
+//stretch:
+//heldkey mutliple keys (maybe 4 event listeners one for each key?)
+//figure out how to store high score
