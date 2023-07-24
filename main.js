@@ -429,6 +429,7 @@ function decHealth(e) {
   gunFlash();
   delayFire();
   batObjs[e.target.id].health -= guy.attack;
+  if (batObjs[e.target.id].health <= 5){batEls[e.target.id].src = "assets/bat_damaged.gif";}
   if (batObjs[e.target.id].health <= 0) {
     batEls[e.target.id].remove();
     score++;
@@ -495,5 +496,7 @@ if(guyMoveId === true){clearInterval(guyMoveId)}
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
 //sound toggle
 //fine tune collide
+
+//bugs:
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
