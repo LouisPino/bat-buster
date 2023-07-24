@@ -1,42 +1,46 @@
 //variables
+// let headerHeight = 120;
+// let footerHeight = 75;
+//let guySpeedFreq = 100; // frequency of motion when held
 const mainEl = document.querySelector("main");
 let mousePos = [];
-let headerHeight = 120;
-let footerHeight = 75;
 let batCount = 0;
-let batObjs = [];
+let batObjs = [];//// to be filled with bat objects as generated (ID matches position in batEls array)
 let batEls = [];
 let batGenFreq = 3000;
-let batSpeedFreq = 100;
-let batSpeed = 20; // pixels moved per jump
-let guySpeedFreq = 100; // frequency of jump
+let batSpeedFreq = 100; //frequency of motions
+let batSpeed = 20; // pixels moved per motion
 let batMoveTimeId;
-let batDim = 50;
+let batDim = 50;//Bat dimensions (h === w)
 const maxLives = 3;
 let lives = maxLives;
 let heldKey;
 let score = 0;
 let fireDelay;
-let bounds = {};
-let attackMult = 1;
-let powerTime = 10000;
-let fireDelayMult = 1;
+let bounds = {};//to be filled with bmainEl oundary info with getBounds()
+let attackMult = 1; //Attack multiplier to be changed by power up
+let powerTime = 10000;//Length of powerups
+let fireDelayMult = 1;//fire rate multiplier to be changed by powerup
 const pistolAudio = new Audio("assets/pistol.mp3");
 const rifleAudio = new Audio("assets/rifle.mp3");
 const bazookaAudio = new Audio("assets/bazooka.mp3");
 const bonkAudio = new Audio("assets/bonk.mp3");
 const hurtAudio = new Audio("assets/hurt.mp3");
-let gunSelected;
-let defense = false;
-let guyMoveId;
-let sound = true;
-let powerUpCount = 0;
-let powerUpEls = [];
-let powerUpObjs = [];
-let invincibility = false;
-const powerUpFreq = 2
-const defensivePowerUps = 2
+let gunSelected; //store gun selection
+let defense = false; //store whether or not we are in defense mode
+let guyMoveId; //timer name for guyMove()
+let sound = true; //store whether or not player wants sounds on
+let powerUpCount = 0; // keep track of powerUps generated so each new one can be assigned a unique ID
+let powerUpEls = [];// to be filled with powerUp elements as generated
+let powerUpObjs = [];//to be filled with power up Objects as generated (ID matches position in powerupEls array)
+let invincibility = false;//store invincibility state for powerUp
+const powerUpFreq = 8 // create a powerUp when this many bats have been generated
+const defensivePowerUps = 2 //all powerups apply to attack mode, this many apply to defense mode. Keep defenseive power ups in beginning of powerUpEls array and adjust this number to the amount of defensive power ups.
+let invincibleLoop//declare name of powerup loop to avoid glitching 
+let increaseAttackLoop//declare name of powerup loop to avoid glitching 
+let increaseFireRateLoop //declare name of powerup loop to avoid glitching 
 
+//Define Gun class, define guns, store in dictionary for later use
 class Gun {
   constructor(fireDelay, hitPoints, name, audio) {
     this.name = name;
@@ -47,14 +51,15 @@ class Gun {
     this.audio = audio;
   }
 }
-
 const pistol = new Gun(100, 3, "pistol", pistolAudio);
 const rifle = new Gun(500, 4, "rifle", rifleAudio);
 const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio);
 let guns = [pistol, rifle, bazooka];
 
+//Define guy properties
 let guy = {
   speed: 25,
+  speedFreq: 100,
   width: 50,
   height: 100,
   xTrans: 0,
@@ -62,6 +67,7 @@ let guy = {
   attack: 0,
 };
 
+//Define Bat class
 class Bat {
   constructor(batCount) {
     this.health = 10;
@@ -72,7 +78,6 @@ class Bat {
     this.yTrans = topBottom();
     this.id = batCount;
   }
-
   batMove() {
     let q = this;
     let xDir = 1;
@@ -99,6 +104,7 @@ class Bat {
         }
         if (invincibility === true) {
           score++;
+          playAudio(bonkAudio)
           renderScore();
         }
       }
@@ -146,7 +152,6 @@ class Bat {
     batEls[batCount] = document.createElement("img");
     batEls[batCount].classList.add("bat");
     batEls[batCount].src = "assets/bat.gif";
-    //batEls[batCount].draggable = "false";
     batEls[batCount].id = `${batCount}`;
     batEls[
       batCount
@@ -164,6 +169,7 @@ class Bat {
   }
 }
 
+////Define PowerUp class, define PowerUps, store in dictionary for later use
 class PowerUp {
   constructor(name, func) {
     this.name = name;
@@ -172,7 +178,7 @@ class PowerUp {
     this.xTrans = randomInX();
     this.yTrans = randomInY();
   }
-  checkCollision() {
+  checkCollision() {//probably don't need this?
     let q = this;
     checkPowerUpCollision(q);
   }
@@ -185,7 +191,6 @@ const extraLife = new PowerUp("extraLife", extraLifeFunc);
 let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
 //cached elements
-
 pistolEl = document.querySelector(".pistol");
 rifleEl = document.querySelector(".rifle");
 bazookaEl = document.querySelector(".bazooka");
@@ -213,11 +218,10 @@ function init() {
   guy.xTrans = 0;
   guy.yTrans = 0;
   batCount = 0;
-  batObjs = [];
-  batEls = [];
+  //batObjs = [];
+  //batEls = [];
   batGenFreq = 3000;
   lives = maxLives;
-
   render();
 }
 
@@ -301,7 +305,7 @@ function guyMove() {
       }
     }
     renderGuy();
-  }, guySpeedFreq);
+  }, guy.speedFreq);
 }
 
 function gunSelectBorder(gun) {
@@ -423,9 +427,14 @@ function loseLife() {
 function gameOver() {
   clearInterval(newBats);
   clearInterval(guyMoveId);
-  for (i = 0; i < batCount; i++) {
-    batEls[i].remove();
+  for (powerUpEl of powerUpEls){
+    powerUpEl.remove()
   }
+  // powerUpEls = [];
+  // powerUpObjs = [];
+   for (i = 0; i < batCount; i++) {
+     batEls[i].remove();
+   }
   init();
   lives = 0;
   renderLives();
@@ -587,28 +596,33 @@ function randomInY() {
 }
 
 function invincibleFunc() {
-  console.log("INVINCIBLE!");
+ //console.log("INVINCIBLE!");
+  clearInterval(invincibleLoop)
   invincibility = true;
-  setTimeout(function () {
+  guyEl.src = 'assets/guyInvincible.gif'
+   invincibleLoop = setTimeout(function () {
+    guyEl.src = 'assets/guy.png'
     invincibility = false;
   }, powerTime);
 }
 
 
 function increaseAttackFunc(x) {
-  console.log("INCREASE ATTACK!");
+  //console.log("INCREASE ATTACK!");
+  clearInterval(increaseAttackLoop)
   x = 2;
   attackMult = x;
-  setTimeout(function () {
+   increaseAttackLoop = setTimeout(function () {
     attackMult = 1;
   }, powerTime);
 }
 
 function increaseFireRateFunc(x) {
+  clearInterval(increaseFireRateLoop)
   x = 0.5;
-  console.log("INCREASE FIRE RATE!");
+ // console.log("INCREASE FIRE RATE!");
   fireDelayMult = x;
-  setTimeout(function () {
+   increaseFireRateLoop = setTimeout(function () {
     fireDelayMult = 1;
   }, powerTime);
 }
@@ -628,10 +642,16 @@ function extraLifeFunc() {
 }
 
 //MVP:
+//clean up where variables get initialized, which are constant and which can change, group by purpose, 
+
+
+
+//glitches want fixing-
 //fix first bat glitching out
-//figure out how to clear batMoveLoop
-//clean up where variables get initialized, which are constant and which can change
-//add invincible gif of guy flashing
+
+// nice touches: indicator img for power ups
+//flash goes away when switching
+
 
 //stretch:
 //heldkey mutliple keys (maybe 4 event listeners one for each key?)
