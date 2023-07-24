@@ -1,9 +1,7 @@
 //variables
 let mousePos = [];
-let gunUnflasher;
 let headerHeight = 120;
 let footerHeight = 75;
-let borderWidth = window.innerWidth / 7;
 let batCount = 0;
 let batObjs = [];
 let batEls = [];
@@ -21,7 +19,7 @@ let fireDelay;
 let bounds = {};
 let attackMult = 1
 let powerTime
-let fireDelayMult
+let fireDelayMult = 1
 const pistolAudio = new Audio("assets/pistol.mp3");
 const rifleAudio = new Audio("assets/rifle.mp3");
 const bazookaAudio = new Audio("assets/bazooka.mp3");
@@ -38,6 +36,7 @@ class Gun {
     this.fireDelay = fireDelay;
     this.hitPoints = hitPoints;
     this.El = document.querySelector(`.${name}`);
+    this.imgEl = document.querySelector(`.${name} > img`);
     this.audio = audio;
   }
 }
@@ -71,14 +70,14 @@ class Bat {
     let q = this;
     let xDir = 1;
     let yDir = 1;
-    if (q.xTrans < window.innerWidth / 2 - borderWidth) {
+    if (q.xTrans < (bounds.width / 2)) {
       xDir = 1;
-    } else if (q.xTrans > window.innerWidth / 2 - borderWidth) {
+    } else if (q.xTrans > (bounds.width / 2)) {
       xDir = -1;
     }
-    if (q.yTrans < window.innerHeight / 2 - 100) {
+    if (q.yTrans < (bounds.height / 2)) {
       yDir = 1;
-    } else if (q.yTrans > window.innerHeight / 2 - 100) {
+    } else if (q.yTrans > (bounds.height / 2)) {
       yDir = -1;
     }
     batMoveTimeId = setInterval(function () {
@@ -208,12 +207,12 @@ function buttonPress(e) {
   if (key1 || key2) {
     chooseWeapon(e.keyCode);
   }
-  // if(!defense){guyMove(e.keyCode)}
 }
 
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
+  //console.log(mousePos)
 }
 
 function chooseWeapon(num) {
@@ -249,8 +248,10 @@ function guyMoveDefenseMode(e) {
 }
 function guyMove() {
   guyMoveId = setInterval(function () {
+    getGuyBounds();
+    console.log(guy.left)
     if (heldKey === 37 || heldKey === 65) {
-      if (guy.left - guy.width / 2 > bounds.left) {
+      if (guy.left - guy.width > bounds.left) {
         guy.xTrans -= guy.speed;
       }
     } else if (heldKey === 38 || heldKey === 87) {
@@ -267,24 +268,23 @@ function guyMove() {
       }
     }
     renderGuy();
-    getGuyBounds();
   }, guySpeedFreq);
 }
 
+
 function gunSelectBorder(gun) {
   guns.forEach(function (w) {
-    w.El.classList.remove("selected");
+    w.imgEl.classList.remove("selected");
   });
-  gun.El.classList.add("selected");
+  gun.imgEl.classList.add("selected");
 }
 
 function gunFlash(gun) {
   const unFlash = function () {
-    gunSelected.El.id = "";
+    gunSelected.imgEl.id = "";
   };
-  gunUnflasher = gun;
   playAudio(gunSelected.audio);
-  gunSelected.El.id = "fired";
+  gunSelected.imgEl.id = "fired";
   setTimeout(unFlash, fireDelay*fireDelayMult);
 }
 
@@ -302,7 +302,7 @@ function onBorder(x, y) {
 
 function topBottom() {
   y = Math.floor(Math.random() * 2);
-  return y === 0 ? 0 : window.innerHeight - footerHeight - 50 - headerHeight;
+  return y === 0 ? 0 : bounds.bottom - batDim*3.5;
 }
 
 function renderBat() {
@@ -428,7 +428,6 @@ function renderGuy() {
 function decHealth(e) {
   gunFlash();
   delayFire();
-  console.log(guy.attack)
   batObjs[e.target.id].health -= guy.attack*attackMult;
   if (batObjs[e.target.id].health <= 5) {
     batEls[e.target.id].src = "assets/bat_damaged.gif";
@@ -505,26 +504,29 @@ function toggleSound() {
 }
 
 function randomInX(){
-return Math.floor(Math.random()* mainEl.getBoundingClientRect().width)
+return Math.floor(Math.random()* (mainEl.getBoundingClientRect().width*.9) + (mainEl.getBoundingClientRect().width*.05))
 }
 
 function randomInY(){
-return Math.floor(Math.random()* mainEl.getBoundingClientRect().height + mainEl.getBoundingClientRect().top)
+return Math.floor(Math.random()* (mainEl.getBoundingClientRect().height*.9) + (mainEl.getBoundingClientRect().height*.05))
 }
 
-//stretch:
+//MVP:
 //power ups
-//heldkey mutliple keys (maybe 4 event listeners one for each key?)
-//fine tune collide
-
-
-//bugs:
 //fix first bat glitching out
 //figure out how to clear batMoveLoop
+//clean up where variables get initialized, which are constant and which can change
+
+
+//stretch:
+//heldkey mutliple keys (maybe 4 event listeners one for each key?)
+//fine tune collide
+//figure out how to store high score
 
 
 
-//add power ups, one to make shots stronger, one to make you invincible
+
+//add power ups, one to make shots stronger, one to make you invincible, one reduce fire rate
 
 //if batCount % bonusFreq === 0 {create and place bonus item randomly. Y between bounds.top and bottom, X betweeen left and right}
 

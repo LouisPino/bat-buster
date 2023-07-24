@@ -105,11 +105,14 @@ footer img {
 }
 
 .gun-ctr{
-  border-radius: 55%;
-  transition: ease 200ms;
   display: flex;
   align-items: center;
   font-size: 1.5rem;
+}
+
+.gun-ctr > img{
+  transition: ease 200ms;
+  border-radius: 50%;
 }
 
 .guy {
