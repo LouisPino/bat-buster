@@ -12,7 +12,7 @@ let batObjs = [];//// to be filled with bat objects as generated (ID matches pos
 let batEls = [];
 let batGenFreq = 3000;
 let batSpeedFreq = 15; //frequency of motions
-let batSpeedMin = 3; // pixels moved per motion
+let batSpeedMin = 1; // pixels moved per motion
 let batSpeedRange = 3
 let batMoveTimeId;
 let batDim = 50;//Bat dimensions (h === w)
@@ -29,6 +29,7 @@ let sound = true; //store whether or not player wants sounds on
 ////guy
 let guyMoveId; //timer name for guyMove()
 let heldKeys = []//hold and array of keys held down to be used by guyMove attack mode
+let previousKey
 const guy = {
   speed: 25,
   speedFreq: 100,
@@ -55,7 +56,7 @@ let powerUpCount = 0; // keep track of powerUps generated so each new one can be
 let powerUpEls = [];// to be filled with powerUp elements as generated
 let powerUpObjs = [];//to be filled with power up Objects as generated (ID matches position in powerupEls array)
 let invincibility = false;//store invincibility state for powerUp
-const powerUpFreq = 2 // create a powerUp when this many bats have been generated
+const powerUpFreq = 8 // create a powerUp when this many bats have been generated
 const defensivePowerUps = 2 //all powerups apply to attack mode, this many apply to defense mode. Keep defenseive power ups in beginning of powerUpEls array and adjust this number to the amount of defensive power ups.
 let invincibleLoop//declare name of powerup loop to avoid glitching 
 let increaseAttackLoop//declare name of powerup loop to avoid glitching 
@@ -163,6 +164,7 @@ class Bat {
     batEls[batCount] = document.createElement("img");
     batEls[batCount].classList.add("bat");
     batEls[batCount].src = "assets/bat.gif";
+    batEls[batCount].setAttribute('draggable', false)
     batEls[batCount].id = `${batCount}`;
     batEls[
       batCount
@@ -202,6 +204,8 @@ const extraLife = new PowerUp("extraLife", extraLifeFunc);
 let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
 ////////////cached elements////////////
+
+bodyEl = document.querySelector("body");
 pistolEl = document.querySelector(".pistol");
 rifleEl = document.querySelector(".rifle");
 bazookaEl = document.querySelector(".bazooka");
@@ -224,6 +228,7 @@ soundIconEl.addEventListener("click", toggleSound);
 document.addEventListener('keydown', printKeyCode)
 document.addEventListener('keyup', printKeyCodeUP)
 
+
 /////////////////functions////////////////
 
 
@@ -235,6 +240,7 @@ function init() {
   batCount = 0;
   batGenFreq = 3000;
   lives = maxLives;
+
   render();
 }
 
@@ -265,20 +271,22 @@ function initDefense() {
   for (gun of guns) {
     gun.El.style.display = "none";
   }
-  document.addEventListener("keydown", guyMoveDefenseMode);
+  document.addEventListener("keydown", guyMoveDefenseModeParser);
   if (guyMoveId === true) {
     clearInterval(guyMoveId);
   }
 }
 
 function initAttack() {
+  mainEl.addEventListener('mousedown', shotMarker)
+  document.addEventListener('keydown', spaceFire)
   guy.speed = 50;
   defense = false;
   for (gun of guns) {
     gun.El.style.display = "flex";
   }
   chooseWeapon(49);
-  document.removeEventListener("keydown", guyMoveDefenseMode);
+  document.removeEventListener("keydown", guyMoveDefenseModeParser);
   guyMove();
 }
 
@@ -298,7 +306,7 @@ function getBounds(main) {
 function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
-  //console.log(mousePos)
+//  console.log(mousePos)
 }
 
 
@@ -337,11 +345,26 @@ function gunFlash(gun) {
   setTimeout(unFlash, fireDelay * fireDelayMult);
 }
 
+function shotMarker(){
+shotMarkEl = document.createElement('div')
+shotMarkEl.classList.add('shot-marker')
+shotMarkEl.style.left = `${mousePos[0] - 5}px`
+shotMarkEl.style.top = `${mousePos[1]-5}px`
+bodyEl.appendChild(shotMarkEl)
+setTimeout(function(){
+  for (child of bodyEl.children){
+    if(child.classList[0] === "shot-marker") child.remove()
+  }
+}, 100)
+
+}
+
 
 //////move the guy/////
 //DEFENSE MODE GUYMOVE()
+
 function guyMoveDefenseMode(e) {
-  num = e.keyCode;
+  num = e;
   if (num === 37 || num === 65) {
     if (guy.left - guy.width / 2 > bounds.left) {
       guy.xTrans -= guy.speed;
@@ -363,11 +386,23 @@ function guyMoveDefenseMode(e) {
   getGuyBounds();
 }
 
+function guyMoveDefenseModeParser(e){
+  keyPressed = e.keyCode
+  console.log(keyPressed)
+  if(keyPressed !== previousKey){
+    previousKey = keyPressed
+    guyMoveDefenseMode(keyPressed)
+  }
+}
+
+
 function delayFire() {
   batEls.forEach(function (batEl) {
     batEl.removeEventListener("mousedown", decHealth);
+    mainEl.removeEventListener('mousedown', shotMarker)
     setTimeout(function () {
       batEl.addEventListener("mousedown", decHealth);
+      mainEl.addEventListener('mousedown', shotMarker)
     }, fireDelay * fireDelayMult);
   });
 }
@@ -473,13 +508,12 @@ function newPowerUp() {
   powerUpEls[powerUpCount].src = powerUpList[x].src;
   xTrans = randomInX();
   yTrans = randomInY();
-  powerUpEls[
-    powerUpCount
-  ].style.transform = `translate(${xTrans}px, ${yTrans}px)`;
   powerUpObjs[powerUpCount] = new PowerUp(
     powerUpList[x].name,
-    powerUpList[x].effect
-  );
+    powerUpList[x].effect)
+    powerUpEls[
+      powerUpCount
+    ].style.transform = `translate(${xTrans}px, ${yTrans}px)`;
   powerUpObjs[powerUpCount].id = powerUpCount;
   powerUpObjs[powerUpCount].checkCollision();
   mainEl.appendChild(powerUpEls[powerUpCount]);
@@ -537,10 +571,11 @@ function gameOver() {
   for (powerUpEl of powerUpEls){
     powerUpEl.remove()
   }
-   for (i = 0; i < batCount; i++) {
-     batEls[i].remove();
-   }
+  for (i = 0; i < batCount; i++) {
+    batEls[i].remove();
+  }
   init();
+  mainEl.removeEventListener('mousedown', shotMarker)
   lives = 0;
   renderLives();
   guyEl.style.display = "none";
@@ -552,14 +587,16 @@ function gameOver() {
 }
 
 function decHealth(e) {
+  if(typeof e === 'object'){id = e.target.id}
+  else{id = e}
   gunFlash();
   delayFire();
-  batObjs[e.target.id].health -= guy.attack * attackMult;
-  if (batObjs[e.target.id].health <= 5) {
-    batEls[e.target.id].src = "assets/bat_damaged.gif";
+  batObjs[id].health -= guy.attack * attackMult;
+  if (batObjs[id].health <= 5) {
+    batEls[id].src = "assets/bat_damaged.gif";
   }
-  if (batObjs[e.target.id].health <= 0) {
-    batEls[e.target.id].remove();
+  if (batObjs[id].health <= 0) {
+    batEls[id].remove();
     score++;
     playAudio(bonkAudio);
   }
@@ -630,7 +667,6 @@ function increaseAttackFunc() {
 }
 
 function increaseFireRateFunc() {
-  console.log()
   clearInterval(increaseFireRateLoop)
   powerUpText('Fire rate increased!')
   fireDelayMult = .5;
@@ -655,15 +691,17 @@ function extraLifeFunc() {
 }
 
 function powerUpText(text){
-  console.log(guy.xTrans, guy.yTrans)
   textEl = document.createElement('h2')
   textEl.classList.add('power-up-text')
   textEl.innerHTML = text
-  mainEl.appendChild(textEl)
-//  textEl.style.transform = `translate(${bounds.width / 2}px, ${0}px)`
+  bodyEl.appendChild(textEl)
+  textEl.style.left = `${guy.left}px`
+  textEl.style.top = `${guy.top - guy.height/2}px`
   setTimeout(function (){
-    textEl.remove()
-  }, 4000)
+    for (child of bodyEl.children){
+      if(child.classList[0] === "power-up-text") child.remove()
+    }
+  }, 2000)
 }
 
 ////handle events/////
@@ -677,9 +715,32 @@ function printKeyCodeUP(e){
   heldKeys.splice(heldKeys.indexOf(e.keyCode), 1)
 }
 
+function spaceFire(e){ 
+  if(e.keyCode === 32){
+    for (batEl of batEls){
+      if(mousePos[0] < batEl.getBoundingClientRect().right + window.scrollX &&
+         mousePos[0] > batEl.getBoundingClientRect().left + window.scrollX &&
+         mousePos[1] > batEl.getBoundingClientRect().top + window.scrollY &&
+         mousePos[1] < batEl.getBoundingClientRect().bottom + window.scrollY
+        ){
+          console.log(typeof batEl.id)
+          decHealth(batEl.id)
+        }
+    }
+  }
+}
+
+
   //TODO:
   //MAKE A BEAUTIFUL README
-  //make defense mode no key repeats
-  //space bar shoot
-  //make bullets fly
+
+
+  //layout stuff
   //make no mobile screen
+  //after clicking start button, change text to instructions, remove buttons, click anywhere to start
+ // make max width and height
+
+
+ //nice touches- 
+ // guy holds gun
+ // bullets fly

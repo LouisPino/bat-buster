@@ -52,7 +52,7 @@ main {
   background-color: rgb(255, 241, 237);
   background-image: url('assets/8bitground.jpeg');
   grid-column: 2 / 3;
-
+  cursor: crosshair;
 }
 
 .instructions {
@@ -132,7 +132,6 @@ footer img {
 
 .bat{
   max-height: 50px;
-  /* transition: ease 100ms; */
   position: absolute;
 }
 
@@ -198,7 +197,21 @@ font-size: 1.2rem;
 
 .power-up-text{
  color: red ;
-position: relative;
-text-align: center;
-margin-top: 3rem;
+position: absolute;
+}
+
+
+@media screen and (max-width: 800px){
+  .modal{
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+.shot-marker{
+  position: absolute;
+  border-radius: 50%;
+  background-color: black;
+  min-height: 15px;
+  min-width: 15px;
+  cursor: crosshair;
 }
