@@ -8,6 +8,10 @@
   font-family: "Press Start 2P", cursive;
 }
 
+*::selection{
+  background-color: transparent;
+}
+
 .title {
   text-align: center;
   margin: 25px 0;
@@ -42,7 +46,6 @@ body {
 .sound-icon{
 position: absolute;
 height: 60px;
-
 top: 2%;
 right: 2%
 
@@ -53,6 +56,13 @@ main {
   background-image: url('assets/8bitground.jpeg');
   grid-column: 2 / 3;
   cursor: crosshair;
+  width: 1000px;
+  height: 100%;
+  max-height: 800px;
+  min-height: 500px;
+  margin: auto;
+  border: 1px solid red;
+
 }
 
 .instructions {
@@ -118,7 +128,7 @@ footer img {
 .guy {
   background-position-x: center;
   position: absolute;
-  max-height: 100px;
+  max-height: 50px;
   left: 50%;
   top: 50%;
   transition: ease 200ms;
@@ -131,7 +141,7 @@ footer img {
 
 
 .bat{
-  max-height: 50px;
+  max-height: 40px;
   position: absolute;
 }
 
@@ -208,10 +218,11 @@ position: absolute;
 }
 
 .shot-marker{
+  transition: ease 100ms;
   position: absolute;
   border-radius: 50%;
   background-color: black;
-  min-height: 15px;
-  min-width: 15px;
+  min-height: 20px;
+  min-width: 20px;
   cursor: crosshair;
 }
