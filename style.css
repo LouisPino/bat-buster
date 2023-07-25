@@ -60,8 +60,9 @@ main {
   max-height: 800px;
   min-height: 500px;
   margin: auto;
-  box-shadow: 0 0 80px 20px;
+  box-shadow: 0 35px 80px 10px;
 }
+
 .sorry{
   display: none
 }
@@ -130,7 +131,8 @@ footer img {
 .guy {
   background-position-x: center;
   position: absolute;
-  max-height: 75px;
+  height: 75px;
+  width: 50px; 
   left: 50%;
   top: 50%;
   transition: ease 200ms;

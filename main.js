@@ -1,4 +1,18 @@
 /////////variables/////////
+////cached elements
+bodyEl = document.querySelector("body");
+pistolEl = document.querySelector(".pistol");
+rifleEl = document.querySelector(".rifle");
+bazookaEl = document.querySelector(".bazooka");
+guyEl = document.querySelector(".guy");
+livesDiv = document.querySelector(".lives");
+scoreEl = document.querySelector(".score");
+modalEl = document.querySelector(".modal");
+modalPEl = document.querySelector(".modal-p");
+modalTitleEl = document.querySelector(".modal-title");
+startBtnEl = document.querySelector(".attack");
+defenseBtnEl = document.querySelector(".defense");
+soundIconEl = document.querySelector(".sound-icon");
 
 /////environment
 const mainEl = document.querySelector("main"); //needs top be up top for classes to determine boundaries
@@ -32,13 +46,13 @@ const guySpeed = 15;
 const guy = {
   speed: 15,
   speedFreq: 100,
-  width: 38,
-  height: 75, //match with .guy max-height
+  width: window.getComputedStyle(guyEl).width.slice(0, 2),
+  height: window.getComputedStyle(guyEl).height.slice(0, 2),
   xTrans: 0,
   yTrans: 0,
   attack: 0,
 };
-
+console.log(guy.width)
 ////weapons
 let fireDelay;
 let attackMult = 1; //Attack multiplier to be changed by power up
@@ -56,7 +70,7 @@ let powerUpCount = 0; // keep track of powerUps generated so each new one can be
 let powerUpEls = []; // to be filled with powerUp elements as generated
 let powerUpObjs = []; //to be filled with power up Objects as generated (ID matches position in powerupEls array)
 let invincibility = false; //store invincibility state for powerUp
-const powerUpFreq = 8; // create a powerUp when this many bats have been generated
+let powerUpFreq = 8; // create a powerUp when this many bats have been generated
 const defensivePowerUps = 2; //all powerups apply to attack mode, this many apply to defense mode. Keep defenseive power ups in beginning of powerUpEls array and adjust this number to the amount of defensive power ups.
 let invincibleLoop; //declare name of powerup loop to avoid glitching
 let increaseAttackLoop; //declare name of powerup loop to avoid glitching
@@ -77,8 +91,8 @@ class Gun {
   }
 }
 const pistol = new Gun(100, 3, "pistol", pistolAudio, 'brown', 8);
-const rifle = new Gun(500, 4, "rifle", rifleAudio, 'black', 10);
-const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio, 'green', 16);
+const rifle = new Gun(350, 4, "rifle", rifleAudio, 'black', 10);
+const bazooka = new Gun(9000, 5, "bazooka", bazookaAudio, 'green', 16);
 let guns = [pistol, rifle, bazooka];
 
 ////Define Bat class
@@ -204,21 +218,7 @@ const increaseFireRate = new PowerUp("increaseFireRate", increaseFireRateFunc);
 const extraLife = new PowerUp("extraLife", extraLifeFunc);
 let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
-////////////cached elements////////////
 
-bodyEl = document.querySelector("body");
-pistolEl = document.querySelector(".pistol");
-rifleEl = document.querySelector(".rifle");
-bazookaEl = document.querySelector(".bazooka");
-guyEl = document.querySelector(".guy");
-livesDiv = document.querySelector(".lives");
-scoreEl = document.querySelector(".score");
-modalEl = document.querySelector(".modal");
-modalPEl = document.querySelector(".modal-p");
-modalTitleEl = document.querySelector(".modal-title");
-startBtnEl = document.querySelector(".attack");
-defenseBtnEl = document.querySelector(".defense");
-soundIconEl = document.querySelector(".sound-icon");
 
 //////////event listeners//////////////
 document.addEventListener("mousemove", storeMouse);
@@ -266,8 +266,10 @@ function startGameDefenseMode() {
 }
 
 function initDefense() {
+  ////change guy to cropped version w no gun
   guy.speed = guySpeed;
   defense = true;
+  powerUpFreq= 5
   for (gun of guns) {
     gun.El.style.display = "none";
   }
@@ -291,6 +293,7 @@ function initAttack() {
   document.addEventListener("keydown", spaceFire);
   guy.speed = guySpeed * 2;
   defense = false;
+  powerUpFreq = 8
   for (gun of guns) {
     gun.El.style.display = "flex";
   }
@@ -539,6 +542,7 @@ function newPowerUp() {
 
 ////////renders//////
 function render() {
+
   renderBat();
   renderLives();
   renderScore();
@@ -582,6 +586,8 @@ function loseLife() {
 }
 
 function gameOver() {
+  mainEl.removeEventListener("mousedown", bulletLaunch);
+  document.removeEventListener("keydown", spaceFire);
   clearInterval(newBats);
   clearInterval(guyMoveId);
   for (powerUpEl of powerUpEls) {
@@ -625,6 +631,7 @@ function decHealth(e) {
 
 function toggleSound() {
   if (sound) {
+
     soundIconEl.src = "assets/nosound.png";
     sound = false;
   } else {
@@ -746,8 +753,9 @@ function bulletLaunch() {
   bulletEl = document.createElement("div");
   bulletEl.classList.add("bullet");
   bodyEl.appendChild(bulletEl);
-  bulletEl.style.left = `${guy.right}px`;
-  bulletEl.style.top = `${guy.top + guy.height / 2}px`;
+  bulletEl.style.left = `${guy.right + window.scrollX}px`;
+  bulletEl.style.top = `${guy.top + (guy.height/2 - 4 )}px`;
+  console.log(guy.height)
   bulletEl.style.backgroundColor = gunSelected.bulletColor
   bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`
   bulletEl.style.height = `${gunSelected.bulletSize}px`
@@ -762,3 +770,7 @@ function bulletLaunch() {
     }, bulletTime);
   }, bulletTime);
 }
+
+
+
+//Variables that need to be put back to normal
