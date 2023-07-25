@@ -8,7 +8,7 @@ Bat Buster also features a defense mode, where shooting is disable and movement 
 
 
 ## Gameplay Screenshot(s): 
-![Screenshot 2023-07-25 at 2 28 18 PM](https://github.com/LouisPino/bat-hunter-demo/assets/130365689/bc44311e-b4d2-44fe-968f-118627fee757)
+
 
 
 ## Technologies Used:
