@@ -722,8 +722,6 @@ function spaceFire(e) {
 //TODO:
 //MAKE A BEAUTIFUL README
 
-//layout stuff
-
 //nice touches-
 // bullets fly
 // guy holds gun (jump from bottom to hand)

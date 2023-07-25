@@ -61,7 +61,7 @@ main {
   max-height: 800px;
   min-height: 500px;
   margin: auto;
-  border: 1px solid red;
+  box-shadow: 0 0 80px 20px;
 }
 .sorry{
   display: none
@@ -74,6 +74,7 @@ main {
   text-align: center;
   line-height: 25px;
   font-size: 1.1rem;
+  
 }
 .instructions h2{
   line-height: 2.3rem;
@@ -88,8 +89,8 @@ main {
 }
 
 .sub-instructions{
-background-color: rgba(0, 0, 0, .2);
-border-radius: 1rem;
+border-top-left-radius: 1rem;
+border-top-right-radius: 1rem;
 padding: 2rem;
 }
 
@@ -130,7 +131,7 @@ footer img {
 .guy {
   background-position-x: center;
   position: absolute;
-  max-height: 50px;
+  max-height: 75px;
   left: 50%;
   top: 50%;
   transition: ease 200ms;
@@ -193,12 +194,7 @@ strong {
 font-size: 1.2rem;
 }
 
-@media screen and (max-height: 900px) {
 
-  .modal{
-    background-color: rgba(255, 255, 255, 0);
-  }
-  }
 
 .power-up{
   max-height: 50px;
@@ -209,13 +205,6 @@ font-size: 1.2rem;
  color: red ;
 position: absolute;
 }
-
-
-/* @media screen and (max-width: 800px){
-  .modal{
-    background-color: rgba(255, 255, 255, 0);
-  }
-} */
 
 .shot-marker{
   transition: ease 100ms;
