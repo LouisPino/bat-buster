@@ -390,9 +390,11 @@ function delayFire() {
   batEls.forEach(function (batEl) {
     batEl.removeEventListener("mousedown", decHealth);
     mainEl.removeEventListener("mousedown", shotMarker);
+    document.removeEventListener("keydown", spaceFire);
     setTimeout(function () {
       batEl.addEventListener("mousedown", decHealth);
       mainEl.addEventListener("mousedown", shotMarker);
+      document.addEventListener("keydown", spaceFire);
     }, fireDelay * fireDelayMult);
   });
 }
@@ -702,6 +704,7 @@ function printKeyCodeUP(e) {
 
 function spaceFire(e) {
   if (e.keyCode === 32) {
+    shotMarker()
     for (batEl of batEls) {
       if (
         mousePos[0] < batEl.getBoundingClientRect().right + window.scrollX &&
@@ -720,9 +723,7 @@ function spaceFire(e) {
 //MAKE A BEAUTIFUL README
 
 //layout stuff
-//make no mobile screen
-//after clicking start button, change text to instructions, remove buttons, click anywhere to start
 
 //nice touches-
-// guy holds gun
 // bullets fly
+// guy holds gun (jump from bottom to hand)

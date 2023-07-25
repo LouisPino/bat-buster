@@ -62,7 +62,9 @@ main {
   min-height: 500px;
   margin: auto;
   border: 1px solid red;
-
+}
+.sorry{
+  display: none
 }
 
 .instructions {
@@ -150,16 +152,14 @@ footer img {
 }
 
 .modal{
-  position: fixed;
-  width: 50%;
-  height: 74%;
-  left: 25%;
-  top: 13%;
+  position: relative;
+  width: 100%;
+  height: 100%;
   background-color: rgb(238 247	255	);
 }
 
 .modal > h2{
-  margin-top: 3rem;
+padding-top: 3rem;
 text-align: center;
 }
 
@@ -211,11 +211,11 @@ position: absolute;
 }
 
 
-@media screen and (max-width: 800px){
+/* @media screen and (max-width: 800px){
   .modal{
     background-color: rgba(255, 255, 255, 0);
   }
-}
+} */
 
 .shot-marker{
   transition: ease 100ms;
@@ -225,4 +225,45 @@ position: absolute;
   min-height: 20px;
   min-width: 20px;
   cursor: crosshair;
+}
+
+@media screen and (max-width: 450px){
+*{
+width: 100vw;
+}
+
+main{
+  color: white;
+  line-height: 28px;
+width: 75vw;
+margin: 0;
+}
+
+main > p{
+  width:90%;
+  margin: auto;
+  margin-top: 2rem;
+}
+
+.modal{
+  display: none;
+}
+
+.instructions{
+  display: none;
+}
+
+.gun-ctr{
+  display: none;
+}
+
+header * {
+  display: none;
+}
+
+.sorry {
+  display: block;
+  text-align: center;
+}
+
 }
