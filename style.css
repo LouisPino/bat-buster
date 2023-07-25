@@ -256,3 +256,13 @@ header * {
 }
 
 }
+
+.bullet{
+  position: absolute;
+  height: 10px;
+  width: 15px;
+  background-color: brown;
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
+  transition: 40ms;
+}

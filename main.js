@@ -49,6 +49,7 @@ const bazookaAudio = new Audio("assets/audio/bazooka.mp3");
 const bonkAudio = new Audio("assets/audio/bonk.mp3");
 const hurtAudio = new Audio("assets/audio/hurt.mp3");
 let gunSelected; //store gun selection
+const bulletTime = 40; //match css .bullet transition time
 
 ////powerups
 let powerUpCount = 0; // keep track of powerUps generated so each new one can be assigned a unique ID
@@ -64,18 +65,20 @@ let increaseFireRateLoop; //declare name of powerup loop to avoid glitching
 //////classes///////
 ////Define Gun class, define guns, store in dictionary for later use
 class Gun {
-  constructor(fireDelay, hitPoints, name, audio) {
+  constructor(fireDelay, hitPoints, name, audio, bulletColor, bulletSize) {
     this.name = name;
     this.fireDelay = fireDelay;
     this.hitPoints = hitPoints;
     this.El = document.querySelector(`.${name}`);
     this.imgEl = document.querySelector(`.${name} > img`);
     this.audio = audio;
+    this.bulletColor = bulletColor
+    this.bulletSize = bulletSize
   }
 }
-const pistol = new Gun(100, 3, "pistol", pistolAudio);
-const rifle = new Gun(500, 4, "rifle", rifleAudio);
-const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio);
+const pistol = new Gun(100, 3, "pistol", pistolAudio, 'brown', 8);
+const rifle = new Gun(500, 4, "rifle", rifleAudio, 'black', 10);
+const bazooka = new Gun(1000, 5, "bazooka", bazookaAudio, 'green', 16);
 let guns = [pistol, rifle, bazooka];
 
 ////Define Bat class
@@ -275,6 +278,7 @@ function initDefense() {
 
 function initAttack() {
   mainEl.addEventListener("mousedown", shotMarker);
+  mainEl.addEventListener("mousedown", bulletLaunch);
   document.addEventListener("keydown", spaceFire);
   guy.speed = guySpeed * 2;
   defense = false;
@@ -379,7 +383,6 @@ function guyMoveDefenseMode(e) {
 
 function guyMoveDefenseModeParser(e) {
   keyPressed = e.keyCode;
-  console.log(keyPressed);
   if (keyPressed !== previousKey) {
     previousKey = keyPressed;
     guyMoveDefenseMode(keyPressed);
@@ -390,10 +393,12 @@ function delayFire() {
   batEls.forEach(function (batEl) {
     batEl.removeEventListener("mousedown", decHealth);
     mainEl.removeEventListener("mousedown", shotMarker);
+    mainEl.removeEventListener("mousedown", bulletLaunch);
     document.removeEventListener("keydown", spaceFire);
     setTimeout(function () {
       batEl.addEventListener("mousedown", decHealth);
       mainEl.addEventListener("mousedown", shotMarker);
+      mainEl.addEventListener("mousedown", bulletLaunch);
       document.addEventListener("keydown", spaceFire);
     }, fireDelay * fireDelayMult);
   });
@@ -597,6 +602,7 @@ function decHealth(e) {
     score++;
     playAudio(bonkAudio);
   }
+  bulletLaunch();
   render();
 }
 
@@ -704,7 +710,8 @@ function printKeyCodeUP(e) {
 
 function spaceFire(e) {
   if (e.keyCode === 32) {
-    shotMarker()
+    bulletLaunch();
+    shotMarker();
     for (batEl of batEls) {
       if (
         mousePos[0] < batEl.getBoundingClientRect().right + window.scrollX &&
@@ -712,16 +719,29 @@ function spaceFire(e) {
         mousePos[1] > batEl.getBoundingClientRect().top + window.scrollY &&
         mousePos[1] < batEl.getBoundingClientRect().bottom + window.scrollY
       ) {
-        console.log(typeof batEl.id);
         decHealth(batEl.id);
       }
     }
   }
 }
 
-//TODO:
-//MAKE A BEAUTIFUL README
-
-//nice touches-
-// bullets fly
-// guy holds gun (jump from bottom to hand)
+function bulletLaunch() {
+  bulletEl = document.createElement("div");
+  bulletEl.classList.add("bullet");
+  bodyEl.appendChild(bulletEl);
+  bulletEl.style.left = `${guy.right}px`;
+  bulletEl.style.top = `${guy.top + guy.height / 2}px`;
+  bulletEl.style.backgroundColor = gunSelected.bulletColor
+  bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`
+  bulletEl.style.height = `${gunSelected.bulletSize}px`
+  if(mousePos[0] < guy.right){bulletEl.style.transform = `rotate(.5turn)`}
+  setTimeout(function () {
+    bulletEl.style.left = `${mousePos[0]}px`;
+    bulletEl.style.top = `${mousePos[1]}px`;
+    setTimeout(function () {
+      for (child of bodyEl.children) {
+        if (child.classList[0] === "bullet") child.remove();
+      }
+    }, bulletTime);
+  }, bulletTime);
+}
