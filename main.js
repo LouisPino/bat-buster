@@ -52,7 +52,7 @@ const guy = {
   yTrans: 0,
   attack: 0,
 };
-console.log(guy.width)
+console.log(guy.width);
 ////weapons
 let fireDelay;
 let attackMult = 1; //Attack multiplier to be changed by power up
@@ -86,13 +86,13 @@ class Gun {
     this.El = document.querySelector(`.${name}`);
     this.imgEl = document.querySelector(`.${name} > img`);
     this.audio = audio;
-    this.bulletColor = bulletColor
-    this.bulletSize = bulletSize
+    this.bulletColor = bulletColor;
+    this.bulletSize = bulletSize;
   }
 }
-const pistol = new Gun(100, 3, "pistol", pistolAudio, 'brown', 8);
-const rifle = new Gun(350, 4, "rifle", rifleAudio, 'black', 10);
-const bazooka = new Gun(9000, 5, "bazooka", bazookaAudio, 'green', 16);
+const pistol = new Gun(100, 3, "pistol", pistolAudio, "brown", 8);
+const rifle = new Gun(350, 4, "rifle", rifleAudio, "black", 10);
+const bazooka = new Gun(9000, 5, "bazooka", bazookaAudio, "green", 16);
 let guns = [pistol, rifle, bazooka];
 
 ////Define Bat class
@@ -218,8 +218,6 @@ const increaseFireRate = new PowerUp("increaseFireRate", increaseFireRateFunc);
 const extraLife = new PowerUp("extraLife", extraLifeFunc);
 let powerUpList = [invincible, extraLife, increaseAttack, increaseFireRate];
 
-
-
 //////////event listeners//////////////
 document.addEventListener("mousemove", storeMouse);
 document.addEventListener("keydown", buttonPress);
@@ -252,7 +250,6 @@ function startGame() {
   guyEl.style.display = "inline";
   getGuyBounds();
   releaseBats();
-
 }
 function startGameDefenseMode() {
   init();
@@ -269,7 +266,7 @@ function initDefense() {
   ////change guy to cropped version w no gun
   guy.speed = guySpeed;
   defense = true;
-  powerUpFreq= 5
+  powerUpFreq = 5;
   for (gun of guns) {
     gun.El.style.display = "none";
   }
@@ -277,14 +274,14 @@ function initDefense() {
   if (guyMoveId === true) {
     clearInterval(guyMoveId);
   }
-  introTextEl = document.createElement('h2')
-  introTextEl.innerHTML = "The bats took your weapons! <br><br>RUN!!!!"
-  introTextEl.classList.add('intro-text')
-  mainEl.appendChild(introTextEl)
-  setTimeout(function(){
-    introTextEl.remove()
-  }, batGenFreq)
-  mainEl.style.cursor = 'default'
+  introTextEl = document.createElement("h2");
+  introTextEl.innerHTML = "The bats took your weapons! <br><br>RUN!!!!";
+  introTextEl.classList.add("intro-text");
+  mainEl.appendChild(introTextEl);
+  setTimeout(function () {
+    introTextEl.remove();
+  }, batGenFreq);
+  mainEl.style.cursor = "default";
 }
 
 function initAttack() {
@@ -293,21 +290,21 @@ function initAttack() {
   document.addEventListener("keydown", spaceFire);
   guy.speed = guySpeed * 2;
   defense = false;
-  powerUpFreq = 8
+  powerUpFreq = 8;
   for (gun of guns) {
     gun.El.style.display = "flex";
   }
   chooseWeapon(49);
   document.removeEventListener("keydown", guyMoveDefenseModeParser);
   guyMove();
-  introTextEl = document.createElement('h2')
-introTextEl.innerHTML = "LET'S BUST SOME BATS"
-introTextEl.classList.add('intro-text')
-mainEl.appendChild(introTextEl)
-setTimeout(function(){
-  introTextEl.remove()
-}, batGenFreq)
-mainEl.style.cursor = 'crosshair'
+  introTextEl = document.createElement("h2");
+  introTextEl.innerHTML = "LET'S BUST SOME BATS";
+  introTextEl.classList.add("intro-text");
+  mainEl.appendChild(introTextEl);
+  setTimeout(function () {
+    introTextEl.remove();
+  }, batGenFreq);
+  mainEl.style.cursor = "crosshair";
 }
 
 function getBounds(main) {
@@ -542,7 +539,6 @@ function newPowerUp() {
 
 ////////renders//////
 function render() {
-
   renderBat();
   renderLives();
   renderScore();
@@ -631,7 +627,6 @@ function decHealth(e) {
 
 function toggleSound() {
   if (sound) {
-
     soundIconEl.src = "assets/nosound.png";
     sound = false;
   } else {
@@ -754,12 +749,14 @@ function bulletLaunch() {
   bulletEl.classList.add("bullet");
   bodyEl.appendChild(bulletEl);
   bulletEl.style.left = `${guy.right + window.scrollX}px`;
-  bulletEl.style.top = `${guy.top + (guy.height/2 - 4 )}px`;
-  console.log(guy.height)
-  bulletEl.style.backgroundColor = gunSelected.bulletColor
-  bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`
-  bulletEl.style.height = `${gunSelected.bulletSize}px`
-  if(mousePos[0] < guy.right){bulletEl.style.transform = `rotate(.5turn)`}
+  bulletEl.style.top = `${guy.top + (guy.height / 2 - 4)}px`;
+  console.log(guy.height);
+  bulletEl.style.backgroundColor = gunSelected.bulletColor;
+  bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`;
+  bulletEl.style.height = `${gunSelected.bulletSize}px`;
+  if (mousePos[0] < guy.right) {
+    bulletEl.style.transform = `rotate(.5turn)`;
+  }
   setTimeout(function () {
     bulletEl.style.left = `${mousePos[0]}px`;
     bulletEl.style.top = `${mousePos[1]}px`;
@@ -770,7 +767,3 @@ function bulletLaunch() {
     }, bulletTime);
   }, bulletTime);
 }
-
-
-
-//Variables that need to be put back to normal
