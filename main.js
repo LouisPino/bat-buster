@@ -1,4 +1,4 @@
-//variables
+/////////variables/////////
 
 /////environment
 const mainEl = document.querySelector("main"); //needs top be up top for classes to determine boundaries
@@ -55,7 +55,7 @@ let powerUpCount = 0; // keep track of powerUps generated so each new one can be
 let powerUpEls = [];// to be filled with powerUp elements as generated
 let powerUpObjs = [];//to be filled with power up Objects as generated (ID matches position in powerupEls array)
 let invincibility = false;//store invincibility state for powerUp
-const powerUpFreq = 8 // create a powerUp when this many bats have been generated
+const powerUpFreq = 2 // create a powerUp when this many bats have been generated
 const defensivePowerUps = 2 //all powerups apply to attack mode, this many apply to defense mode. Keep defenseive power ups in beginning of powerUpEls array and adjust this number to the amount of defensive power ups.
 let invincibleLoop//declare name of powerup loop to avoid glitching 
 let increaseAttackLoop//declare name of powerup loop to avoid glitching 
@@ -611,6 +611,7 @@ function randomInY() {
 function invincibleFunc() {
   clearInterval(invincibleLoop)
   invincibility = true;
+  powerUpText("I'm invincible!")
   guyEl.src = 'assets/guyInvincible.gif'
    invincibleLoop = setTimeout(function () {
     guyEl.src = 'assets/guy.png'
@@ -619,19 +620,20 @@ function invincibleFunc() {
 }
 
 
-function increaseAttackFunc(x) {
+function increaseAttackFunc() {
   clearInterval(increaseAttackLoop)
-  x = 2;
-  attackMult = x;
+  powerUpText('Attack increased!')
+  attackMult = 2;
    increaseAttackLoop = setTimeout(function () {
     attackMult = 1;
   }, powerTime);
 }
 
-function increaseFireRateFunc(x) {
+function increaseFireRateFunc() {
+  console.log()
   clearInterval(increaseFireRateLoop)
-  x = 0.5;
-  fireDelayMult = x;
+  powerUpText('Fire rate increased!')
+  fireDelayMult = .5;
    increaseFireRateLoop = setTimeout(function () {
     fireDelayMult = 1;
   }, powerTime);
@@ -648,7 +650,20 @@ function checkPowerUpCollision(q) {
 
 function extraLifeFunc() {
   lives ++
+  powerUpText('Extra life!')
   renderLives()
+}
+
+function powerUpText(text){
+  console.log(guy.xTrans, guy.yTrans)
+  textEl = document.createElement('h2')
+  textEl.classList.add('power-up-text')
+  textEl.innerHTML = text
+  mainEl.appendChild(textEl)
+//  textEl.style.transform = `translate(${bounds.width / 2}px, ${0}px)`
+  setTimeout(function (){
+    textEl.remove()
+  }, 4000)
 }
 
 ////handle events/////
@@ -662,9 +677,9 @@ function printKeyCodeUP(e){
   heldKeys.splice(heldKeys.indexOf(e.keyCode), 1)
 }
 
-
   //TODO:
   //MAKE A BEAUTIFUL README
-  
-  
-  //figure out how to store high score
+  //make defense mode no key repeats
+  //space bar shoot
+  //make bullets fly
+  //make no mobile screen

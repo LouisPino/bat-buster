@@ -195,3 +195,10 @@ font-size: 1.2rem;
   max-height: 50px;
   position: absolute;
 }
+
+.power-up-text{
+ color: red ;
+position: relative;
+text-align: center;
+margin-top: 3rem;
+}

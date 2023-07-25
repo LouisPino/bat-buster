@@ -38,3 +38,4 @@ In this section include the link to your deployed game and any instructions you 
 
 ## Future Features
 Implement a circuit attack mode, waves of bats generated at once in predescribed patterns/numbers. When all bats are removed, wave count increments
+High score function saving score online or another file
