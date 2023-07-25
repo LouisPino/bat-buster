@@ -43,11 +43,11 @@ const guy = {
 let fireDelay;
 let attackMult = 1; //Attack multiplier to be changed by power up
 let fireDelayMult = 1; //fire rate multiplier to be changed by powerup
-const pistolAudio = new Audio("assets/pistol.mp3");
-const rifleAudio = new Audio("assets/rifle.mp3");
-const bazookaAudio = new Audio("assets/bazooka.mp3");
-const bonkAudio = new Audio("assets/bonk.mp3");
-const hurtAudio = new Audio("assets/hurt.mp3");
+const pistolAudio = new Audio("assets/audio/pistol.mp3");
+const rifleAudio = new Audio("assets/audio/rifle.mp3");
+const bazookaAudio = new Audio("assets/audio/bazooka.mp3");
+const bonkAudio = new Audio("assets/audio/bonk.mp3");
+const hurtAudio = new Audio("assets/audio/hurt.mp3");
 let gunSelected; //store gun selection
 
 ////powerups
@@ -721,8 +721,6 @@ function spaceFire(e) {
 
 //TODO:
 //MAKE A BEAUTIFUL README
-
-//rename repo
 
 //nice touches-
 // bullets fly
