@@ -252,6 +252,7 @@ function startGame() {
   guyEl.style.display = "inline";
   getGuyBounds();
   releaseBats();
+
 }
 function startGameDefenseMode() {
   init();
@@ -274,6 +275,14 @@ function initDefense() {
   if (guyMoveId === true) {
     clearInterval(guyMoveId);
   }
+  introTextEl = document.createElement('h2')
+  introTextEl.innerHTML = "The bats took your weapons! <br><br>RUN!!!!"
+  introTextEl.classList.add('intro-text')
+  mainEl.appendChild(introTextEl)
+  setTimeout(function(){
+    introTextEl.remove()
+  }, batGenFreq)
+  mainEl.style.cursor = 'default'
 }
 
 function initAttack() {
@@ -288,6 +297,14 @@ function initAttack() {
   chooseWeapon(49);
   document.removeEventListener("keydown", guyMoveDefenseModeParser);
   guyMove();
+  introTextEl = document.createElement('h2')
+introTextEl.innerHTML = "LET'S BUST SOME BATS"
+introTextEl.classList.add('intro-text')
+mainEl.appendChild(introTextEl)
+setTimeout(function(){
+  introTextEl.remove()
+}, batGenFreq)
+mainEl.style.cursor = 'crosshair'
 }
 
 function getBounds(main) {

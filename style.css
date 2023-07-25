@@ -55,7 +55,6 @@ main {
   background-color: rgb(255, 241, 237);
   background-image: url('assets/8bitground.jpeg');
   grid-column: 2 / 3;
-  cursor: crosshair;
   width: 1000px;
   height: 100%;
   max-height: 800px;
@@ -265,4 +264,11 @@ header * {
   border-top-right-radius: 50%;
   border-bottom-right-radius: 50%;
   transition: 40ms;
+}
+
+.intro-text{
+color: red;
+text-align: center;
+margin-top: 2rem
+
 }

@@ -19,7 +19,7 @@ Bat Buster also features a defense mode, where shooting is disabled and movement
 - Bootstrap 
 
 ## Getting Started: 
-#### [Click here to open the game in your browser](https://louispino.github.io/bat-hunter-demo/index.html)
+#### [Click here to open the game in your browser](https://louispino.github.io/bat-buster/)
 
 #### Attack Mode:
 Use WASD or ↑ ↓ → ← to move your character, avoiding bats and collecting power-ups. Use the mouse to aim, and right click or space bar to shoot. Use the number keys to switch between weapons, which each posess a different attack power and reload speed.
