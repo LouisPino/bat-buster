@@ -60,17 +60,17 @@ let gunSelected; //store gun selection
 const bulletTime = 40; //match css .bullet transition time
 
 ////audio
-const audioMult = 2
+const audioMult = 2;
 const pistolAudio = new Audio("assets/audio/pistol.mp3");
 const rifleAudio = new Audio("assets/audio/rifle.mp3");
 const bazookaAudio = new Audio("assets/audio/bazooka.mp3");
 const bonkAudio = new Audio("assets/audio/bonk.mp3");
 const hurtAudio = new Audio("assets/audio/hurt.mp3");
-pistolAudio.volume = .1 * audioMult
-rifleAudio.volume = .125 * audioMult
-bazookaAudio.volume = .15 * audioMult
-bonkAudio.volume = .225 * audioMult
-hurtAudio.volume = .25 * audioMult
+pistolAudio.volume = 0.1 * audioMult;
+rifleAudio.volume = 0.125 * audioMult;
+bazookaAudio.volume = 0.15 * audioMult;
+bonkAudio.volume = 0.225 * audioMult;
+hurtAudio.volume = 0.25 * audioMult;
 
 ////powerups
 let powerUpCount = 0; // keep track of powerUps generated so each new one can be assigned a unique ID
@@ -246,7 +246,6 @@ function init() {
   batCount = 0;
   batGenFreq = 3000;
   lives = maxLives;
-
   render();
 }
 
@@ -272,7 +271,6 @@ function startGameDefenseMode() {
 }
 
 function initDefense() {
-  ////change guy to cropped version w no gun
   guy.speed = guySpeed;
   defense = true;
   powerUpFreq = 5;
@@ -317,7 +315,6 @@ function initAttack() {
 }
 
 function getBounds() {
-  console.log("got bounds");
   main = mainEl.getBoundingClientRect();
   bounds = {
     right: main.right,
@@ -327,13 +324,6 @@ function getBounds() {
     width: main.width,
     height: main.height,
   };
-}
-
-//for debugging only
-function storeMouse(e) {
-  mousePos[0] = e.clientX;
-  mousePos[1] = e.clientY;
-  //  console.log(mousePos)
 }
 
 //////weapons//////
@@ -421,9 +411,24 @@ function bulletLaunch() {
   }, bulletTime);
 }
 
-//////move the guy/////
-//DEFENSE MODE GUYMOVE()
+function spaceFire(e) {
+  if (e.keyCode === 32) {
+    bulletLaunch();
+    shotMarker();
+    for (batEl of batEls) {
+      if (
+        mousePos[0] < batEl.getBoundingClientRect().right + window.scrollX &&
+        mousePos[0] > batEl.getBoundingClientRect().left + window.scrollX &&
+        mousePos[1] > batEl.getBoundingClientRect().top + window.scrollY &&
+        mousePos[1] < batEl.getBoundingClientRect().bottom + window.scrollY
+      ) {
+        decHealth(batEl.id);
+      }
+    }
+  }
+}
 
+//////moving the guy/////
 function guyMoveDefenseMode(e) {
   num = e;
   if (num === 37 || num === 65) {
@@ -455,7 +460,7 @@ function guyMoveDefenseModeParser(e) {
   }
 }
 
-//ATTACK MODE GUY MOVE
+//ATTACK MODE ONLY
 function guyMove() {
   guyMoveId = setInterval(function () {
     getGuyBounds();
@@ -762,19 +767,7 @@ function printKeyCodeUP(e) {
   heldKeys.splice(heldKeys.indexOf(e.keyCode), 1);
 }
 
-function spaceFire(e) {
-  if (e.keyCode === 32) {
-    bulletLaunch();
-    shotMarker();
-    for (batEl of batEls) {
-      if (
-        mousePos[0] < batEl.getBoundingClientRect().right + window.scrollX &&
-        mousePos[0] > batEl.getBoundingClientRect().left + window.scrollX &&
-        mousePos[1] > batEl.getBoundingClientRect().top + window.scrollY &&
-        mousePos[1] < batEl.getBoundingClientRect().bottom + window.scrollY
-      ) {
-        decHealth(batEl.id);
-      }
-    }
-  }
+function storeMouse(e) {
+  mousePos[0] = e.clientX;
+  mousePos[1] = e.clientY;
 }
