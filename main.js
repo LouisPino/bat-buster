@@ -36,7 +36,7 @@ let lives = maxLives;
 let score = 0;
 const powerTime = 10000; //Length of powerups
 let defense = false; //store whether or not we are in defense mode
-let sound = true; //store whether or not player wants sounds on
+let sound = false; //store whether or not player wants sounds on
 
 ////guy
 let guyMoveId; //timer name for guyMove()
@@ -92,7 +92,7 @@ class Gun {
 }
 const pistol = new Gun(100, 3, "pistol", pistolAudio, "brown", 8);
 const rifle = new Gun(350, 4, "rifle", rifleAudio, "black", 10);
-const bazooka = new Gun(9000, 5, "bazooka", bazookaAudio, "green", 16);
+const bazooka = new Gun(900, 5, "bazooka", bazookaAudio, "green", 16);
 let guns = [pistol, rifle, bazooka];
 
 ////Define Bat class
@@ -147,7 +147,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + batDim,
+          batEls[q.id].getBoundingClientRect().x + batDim + window.scrollX,
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
@@ -155,7 +155,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x,
+          batEls[q.id].getBoundingClientRect().x + window.scrollX,
           batEls[q.id].getBoundingClientRect().y
         ) === "top"
       ) {
@@ -163,7 +163,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x,
+          batEls[q.id].getBoundingClientRect().x + window.scrollX,
           batEls[q.id].getBoundingClientRect().y + batDim
         ) === "bottom"
       ) {
@@ -372,13 +372,54 @@ function shotMarker() {
   }, 150);
 }
 
+function delayFire() {
+  batEls.forEach(function (batEl) {
+    batEl.removeEventListener("mousedown", decHealth);
+    mainEl.removeEventListener("mousedown", shotMarker);
+    mainEl.removeEventListener("mousedown", bulletLaunch);
+    document.removeEventListener("keydown", spaceFire);
+    setTimeout(function () {
+      batEl.addEventListener("mousedown", decHealth);
+      mainEl.addEventListener("mousedown", shotMarker);
+      mainEl.addEventListener("mousedown", bulletLaunch);
+      document.addEventListener("keydown", spaceFire);
+    }, fireDelay * fireDelayMult);
+  });
+}
+
+function bulletLaunch() {
+  bulletEl = document.createElement("div");
+  bulletEl.classList.add("bullet");
+  bodyEl.appendChild(bulletEl);
+  bulletEl.style.left = `${guy.right + window.scrollX}px`;
+  bulletEl.style.top = `${guy.top + (guy.height / 2 - 4)+ window.scrollY}px`;
+  console.log(guy.height);
+  bulletEl.style.backgroundColor = gunSelected.bulletColor;
+  bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`;
+  bulletEl.style.height = `${gunSelected.bulletSize}px`;
+  if (mousePos[0] < guy.right) {
+    bulletEl.style.transform = `rotate(.5turn)`;
+  }
+  setTimeout(function () {
+    bulletEl.style.left = `${mousePos[0] - 10 + window.scrollX}px`;
+    bulletEl.style.top = `${mousePos[1] - 10 + window.scrollY}px`;
+    setTimeout(function () {
+      for (child of bodyEl.children) {
+        if (child.classList[0] === "bullet") child.remove();
+      }
+    }, bulletTime);
+  }, bulletTime);
+}
+
+
+
 //////move the guy/////
 //DEFENSE MODE GUYMOVE()
 
 function guyMoveDefenseMode(e) {
   num = e;
   if (num === 37 || num === 65) {
-    if (guy.left - guy.width / 2 > bounds.left) {
+    if (guy.left - guy.width / 2> bounds.left) {
       guy.xTrans -= guy.speed;
     }
   } else if (num === 38 || num === 87) {
@@ -406,42 +447,30 @@ function guyMoveDefenseModeParser(e) {
   }
 }
 
-function delayFire() {
-  batEls.forEach(function (batEl) {
-    batEl.removeEventListener("mousedown", decHealth);
-    mainEl.removeEventListener("mousedown", shotMarker);
-    mainEl.removeEventListener("mousedown", bulletLaunch);
-    document.removeEventListener("keydown", spaceFire);
-    setTimeout(function () {
-      batEl.addEventListener("mousedown", decHealth);
-      mainEl.addEventListener("mousedown", shotMarker);
-      mainEl.addEventListener("mousedown", bulletLaunch);
-      document.addEventListener("keydown", spaceFire);
-    }, fireDelay * fireDelayMult);
-  });
-}
+
 
 //ATTACK MODE GUY MOVE
 function guyMove() {
   guyMoveId = setInterval(function () {
+    console.log(window.scrollY)
     getGuyBounds();
     if (heldKeys.includes(37) || heldKeys.includes(65)) {
-      if (guy.left - guy.width > bounds.left) {
+      if (guy.left - guy.width/2> bounds.left) {
         guy.xTrans -= guy.speed;
       }
     }
     if (heldKeys.includes(38) || heldKeys.includes(87)) {
-      if (guy.top > bounds.top) {
+      if (guy.top> bounds.top) {
         guy.yTrans -= guy.speed;
       }
     }
     if (heldKeys.includes(39) || heldKeys.includes(68)) {
-      if (guy.right + guy.width / 2 < bounds.right) {
+      if (guy.right + guy.width / 2< bounds.right) {
         guy.xTrans += guy.speed;
       }
     }
     if (heldKeys.includes(40) || heldKeys.includes(83)) {
-      if (guy.bottom + guy.height / 2 < bounds.bottom) {
+      if (guy.bottom + guy.height / 2< bounds.bottom) {
         guy.yTrans += guy.speed;
       }
     }
@@ -458,13 +487,13 @@ function getGuyBounds() {
 
 ///////detections//////
 function onBorder(x, y) {
-  if (x < bounds.left) {
+  if (x + window.scrollX< bounds.left) {
     return "left";
-  } else if (y < bounds.top) {
+  } else if (y + window.scrollY< bounds.top) {
     return "top";
-  } else if (x > bounds.right) {
+  } else if (x + window.scrollX> bounds.right) {
     return "right";
-  } else if (y > bounds.bottom) {
+  } else if (y + window.scrollY> bounds.bottom) {
     return "bottom";
   } else return false;
 }
@@ -744,26 +773,5 @@ function spaceFire(e) {
   }
 }
 
-function bulletLaunch() {
-  bulletEl = document.createElement("div");
-  bulletEl.classList.add("bullet");
-  bodyEl.appendChild(bulletEl);
-  bulletEl.style.left = `${guy.right + window.scrollX}px`;
-  bulletEl.style.top = `${guy.top + (guy.height / 2 - 4)}px`;
-  console.log(guy.height);
-  bulletEl.style.backgroundColor = gunSelected.bulletColor;
-  bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`;
-  bulletEl.style.height = `${gunSelected.bulletSize}px`;
-  if (mousePos[0] < guy.right) {
-    bulletEl.style.transform = `rotate(.5turn)`;
-  }
-  setTimeout(function () {
-    bulletEl.style.left = `${mousePos[0]}px`;
-    bulletEl.style.top = `${mousePos[1]}px`;
-    setTimeout(function () {
-      for (child of bodyEl.children) {
-        if (child.classList[0] === "bullet") child.remove();
-      }
-    }, bulletTime);
-  }, bulletTime);
-}
+//windowscroll to BATS onBorder
+//windowscrill to guy border
