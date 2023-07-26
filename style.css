@@ -17,8 +17,9 @@ body {
   display: grid;
   grid-template-rows: 120px 8fr 75px;
   grid-template-columns: 1fr 5fr 1fr;
-  background-color: burlywood;
   background: url("https://www.americanpac.com/images/rustic_panels/swamp-cypress/swampland-cypress-wood-wall-paneling.jpg");
+  background-color: rgba(0, 0, 0, .3);
+  background-blend-mode: multiply;
   background-size: 10% 100%;
 }
 
@@ -115,11 +116,12 @@ main {
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   padding: 2rem;
+
 }
 
 .sub-instructions > p {
   margin-top: 1rem;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 /* Footer */
