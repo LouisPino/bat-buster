@@ -52,7 +52,6 @@ const guy = {
   yTrans: 0,
   attack: 0,
 };
-console.log(guy.width);
 ////weapons
 let fireDelay;
 let attackMult = 1; //Attack multiplier to be changed by power up
@@ -147,7 +146,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + batDim + window.scrollX,
+          batEls[q.id].getBoundingClientRect().x + batDim ,
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
@@ -155,7 +154,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + window.scrollX,
+          batEls[q.id].getBoundingClientRect().x,
           batEls[q.id].getBoundingClientRect().y
         ) === "top"
       ) {
@@ -163,7 +162,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + window.scrollX,
+          batEls[q.id].getBoundingClientRect().x,
           batEls[q.id].getBoundingClientRect().y + batDim
         ) === "bottom"
       ) {
@@ -226,6 +225,7 @@ defenseBtnEl.addEventListener("click", startGameDefenseMode);
 soundIconEl.addEventListener("click", toggleSound);
 document.addEventListener("keydown", printKeyCode);
 document.addEventListener("keyup", printKeyCodeUP);
+document.addEventListener('scroll', getBounds)
 
 /////////////////functions////////////////
 
@@ -307,7 +307,9 @@ function initAttack() {
   mainEl.style.cursor = "crosshair";
 }
 
-function getBounds(main) {
+function getBounds() {
+  console.log('got bounds')
+  main = mainEl.getBoundingClientRect()
   bounds = {
     right: main.right,
     left: main.left,
@@ -393,7 +395,6 @@ function bulletLaunch() {
   bodyEl.appendChild(bulletEl);
   bulletEl.style.left = `${guy.right + window.scrollX}px`;
   bulletEl.style.top = `${guy.top + (guy.height / 2 - 4)+ window.scrollY}px`;
-  console.log(guy.height);
   bulletEl.style.backgroundColor = gunSelected.bulletColor;
   bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`;
   bulletEl.style.height = `${gunSelected.bulletSize}px`;
@@ -452,7 +453,7 @@ function guyMoveDefenseModeParser(e) {
 //ATTACK MODE GUY MOVE
 function guyMove() {
   guyMoveId = setInterval(function () {
-    console.log(window.scrollY)
+
     getGuyBounds();
     if (heldKeys.includes(37) || heldKeys.includes(65)) {
       if (guy.left - guy.width/2> bounds.left) {
@@ -487,13 +488,13 @@ function getGuyBounds() {
 
 ///////detections//////
 function onBorder(x, y) {
-  if (x + window.scrollX< bounds.left) {
+  if (x< bounds.left) {
     return "left";
-  } else if (y + window.scrollY< bounds.top) {
+  } else if (y< bounds.top) {
     return "top";
-  } else if (x + window.scrollX> bounds.right) {
+  } else if (x> bounds.right) {
     return "right";
-  } else if (y + window.scrollY> bounds.bottom) {
+  } else if (y> bounds.bottom) {
     return "bottom";
   } else return false;
 }
@@ -773,5 +774,3 @@ function spaceFire(e) {
   }
 }
 
-//windowscroll to BATS onBorder
-//windowscrill to guy border
