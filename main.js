@@ -234,6 +234,7 @@ soundIconEl.addEventListener("click", toggleSound);
 document.addEventListener("keydown", printKeyCode);
 document.addEventListener("keyup", printKeyCodeUP);
 document.addEventListener("scroll", getBounds);
+window.addEventListener("resize", getBounds);
 
 /////////////////functions////////////////
 
