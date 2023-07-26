@@ -36,7 +36,7 @@ let lives = maxLives;
 let score = 0;
 const powerTime = 10000; //Length of powerups
 let defense = false; //store whether or not we are in defense mode
-let sound = false; //store whether or not player wants sounds on
+let sound = true; //store whether or not player wants sounds on
 
 ////guy
 let guyMoveId; //timer name for guyMove()
@@ -56,13 +56,21 @@ const guy = {
 let fireDelay;
 let attackMult = 1; //Attack multiplier to be changed by power up
 let fireDelayMult = 1; //fire rate multiplier to be changed by powerup
+let gunSelected; //store gun selection
+const bulletTime = 40; //match css .bullet transition time
+
+////audio
+const audioMult = 2
 const pistolAudio = new Audio("assets/audio/pistol.mp3");
 const rifleAudio = new Audio("assets/audio/rifle.mp3");
 const bazookaAudio = new Audio("assets/audio/bazooka.mp3");
 const bonkAudio = new Audio("assets/audio/bonk.mp3");
 const hurtAudio = new Audio("assets/audio/hurt.mp3");
-let gunSelected; //store gun selection
-const bulletTime = 40; //match css .bullet transition time
+pistolAudio.volume = .1 * audioMult
+rifleAudio.volume = .125 * audioMult
+bazookaAudio.volume = .15 * audioMult
+bonkAudio.volume = .225 * audioMult
+hurtAudio.volume = .25 * audioMult
 
 ////powerups
 let powerUpCount = 0; // keep track of powerUps generated so each new one can be assigned a unique ID
@@ -146,7 +154,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + batDim ,
+          batEls[q.id].getBoundingClientRect().x + batDim,
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
@@ -225,7 +233,7 @@ defenseBtnEl.addEventListener("click", startGameDefenseMode);
 soundIconEl.addEventListener("click", toggleSound);
 document.addEventListener("keydown", printKeyCode);
 document.addEventListener("keyup", printKeyCodeUP);
-document.addEventListener('scroll', getBounds)
+document.addEventListener("scroll", getBounds);
 
 /////////////////functions////////////////
 
@@ -308,8 +316,8 @@ function initAttack() {
 }
 
 function getBounds() {
-  console.log('got bounds')
-  main = mainEl.getBoundingClientRect()
+  console.log("got bounds");
+  main = mainEl.getBoundingClientRect();
   bounds = {
     right: main.right,
     left: main.left,
@@ -394,7 +402,7 @@ function bulletLaunch() {
   bulletEl.classList.add("bullet");
   bodyEl.appendChild(bulletEl);
   bulletEl.style.left = `${guy.right + window.scrollX}px`;
-  bulletEl.style.top = `${guy.top + (guy.height / 2 - 4)+ window.scrollY}px`;
+  bulletEl.style.top = `${guy.top + (guy.height / 2 - 4) + window.scrollY}px`;
   bulletEl.style.backgroundColor = gunSelected.bulletColor;
   bulletEl.style.width = `${gunSelected.bulletSize * 1.5}px`;
   bulletEl.style.height = `${gunSelected.bulletSize}px`;
@@ -412,15 +420,13 @@ function bulletLaunch() {
   }, bulletTime);
 }
 
-
-
 //////move the guy/////
 //DEFENSE MODE GUYMOVE()
 
 function guyMoveDefenseMode(e) {
   num = e;
   if (num === 37 || num === 65) {
-    if (guy.left - guy.width / 2> bounds.left) {
+    if (guy.left - guy.width / 2 > bounds.left) {
       guy.xTrans -= guy.speed;
     }
   } else if (num === 38 || num === 87) {
@@ -448,30 +454,27 @@ function guyMoveDefenseModeParser(e) {
   }
 }
 
-
-
 //ATTACK MODE GUY MOVE
 function guyMove() {
   guyMoveId = setInterval(function () {
-
     getGuyBounds();
     if (heldKeys.includes(37) || heldKeys.includes(65)) {
-      if (guy.left - guy.width/2> bounds.left) {
+      if (guy.left - guy.width / 2 > bounds.left) {
         guy.xTrans -= guy.speed;
       }
     }
     if (heldKeys.includes(38) || heldKeys.includes(87)) {
-      if (guy.top> bounds.top) {
+      if (guy.top > bounds.top) {
         guy.yTrans -= guy.speed;
       }
     }
     if (heldKeys.includes(39) || heldKeys.includes(68)) {
-      if (guy.right + guy.width / 2< bounds.right) {
+      if (guy.right + guy.width / 2 < bounds.right) {
         guy.xTrans += guy.speed;
       }
     }
     if (heldKeys.includes(40) || heldKeys.includes(83)) {
-      if (guy.bottom + guy.height / 2< bounds.bottom) {
+      if (guy.bottom + guy.height / 2 < bounds.bottom) {
         guy.yTrans += guy.speed;
       }
     }
@@ -488,13 +491,13 @@ function getGuyBounds() {
 
 ///////detections//////
 function onBorder(x, y) {
-  if (x< bounds.left) {
+  if (x < bounds.left) {
     return "left";
-  } else if (y< bounds.top) {
+  } else if (y < bounds.top) {
     return "top";
-  } else if (x> bounds.right) {
+  } else if (x > bounds.right) {
     return "right";
-  } else if (y> bounds.bottom) {
+  } else if (y > bounds.bottom) {
     return "bottom";
   } else return false;
 }
@@ -669,6 +672,7 @@ function toggleSound() {
 function playAudio(audio) {
   if (sound) {
     audio.currentTime = 0;
+    // audio.volume = .2
     audio.play();
   }
 }
@@ -773,4 +777,3 @@ function spaceFire(e) {
     }
   }
 }
-
