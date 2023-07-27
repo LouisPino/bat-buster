@@ -13,9 +13,9 @@ modalTitleEl = document.querySelector(".modal-title");
 startBtnEl = document.querySelector(".attack");
 defenseBtnEl = document.querySelector(".defense");
 soundIconEl = document.querySelector(".sound-icon");
+const mainEl = document.querySelector("main");
 
 /////environment
-const mainEl = document.querySelector("main"); //needs top be up top for classes to determine boundaries
 let mousePos = []; // helpful for debugging, not in use for game
 let bounds = {}; //to be filled with mainEl boundary info with getBounds()
 
