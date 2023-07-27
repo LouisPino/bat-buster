@@ -3,7 +3,6 @@
 /* Global Styling */
 * {
   box-sizing: border-box;
-  /* border: 1px solid red; */
   margin: 0;
   padding: 0;
   font-family: "Press Start 2P", cursive;
@@ -18,7 +17,7 @@ body {
   grid-template-rows: 120px 8fr 75px;
   grid-template-columns: 1fr 5fr 1fr;
   background: url("https://www.americanpac.com/images/rustic_panels/swamp-cypress/swampland-cypress-wood-wall-paneling.jpg");
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, 0.3);
   background-blend-mode: multiply;
   background-size: 10% 100%;
 }
@@ -117,7 +116,7 @@ main {
   text-align: center;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .sub-instructions > p {

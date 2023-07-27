@@ -42,7 +42,7 @@ let inAttackMode = false;
 ////guy
 let guyMoveId; //timer name for guyMove()
 let heldKeys = []; //hold and array of keys held down to be used by guyMove attack mode
-let previousKey;
+let previousKey; //Store last key pressed for preventing held keys in defense mode
 const guySpeed = 15;
 const guy = {
   speed: 15,
@@ -54,19 +54,20 @@ const guy = {
   attack: 0,
 };
 ////weapons
-let fireDelay;
+let fireDelay; //Declaring delay between shots do be changed when selecting weapon
 let attackMult = 1; //Attack multiplier to be changed by power up
 let fireDelayMult = 1; //fire rate multiplier to be changed by powerup
 let gunSelected; //store gun selection
 const bulletTime = 40; //match css .bullet transition time
 
-////audio
-const audioMult = 2;
+///////audio
+const audioMult = 2; // global audio volume multiplier
 const pistolAudio = new Audio("assets/audio/pistol.mp3");
 const rifleAudio = new Audio("assets/audio/rifle.mp3");
 const bazookaAudio = new Audio("assets/audio/bazooka.mp3");
 const bonkAudio = new Audio("assets/audio/bonk.mp3");
 const hurtAudio = new Audio("assets/audio/hurt.mp3");
+//mixer
 pistolAudio.volume = 0.1 * audioMult;
 rifleAudio.volume = 0.125 * audioMult;
 bazookaAudio.volume = 0.15 * audioMult;
@@ -214,7 +215,6 @@ class PowerUp {
     this.yTrans = randomInY();
   }
   checkCollision() {
-    //probably don't need this?
     let q = this;
     checkPowerUpCollision(q);
   }
@@ -293,7 +293,7 @@ function initDefense() {
 }
 
 function initAttack() {
-  inAttackMode = true
+  inAttackMode = true;
   mainEl.addEventListener("mousedown", shotMarker);
   mainEl.addEventListener("mousedown", bulletLaunch);
   document.addEventListener("keydown", spaceFire);
@@ -316,25 +316,13 @@ function initAttack() {
   mainEl.style.cursor = "crosshair";
 }
 
-function getBounds() {
-  main = mainEl.getBoundingClientRect();
-  bounds = {
-    right: main.right,
-    left: main.left,
-    top: main.top,
-    bottom: main.bottom,
-    width: main.width,
-    height: main.height,
-  };
-}
-
 //////weapons//////
 function buttonPress(e) {
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
-    if(inAttackMode){
-    chooseWeapon(e.keyCode);
+    if (inAttackMode) {
+      chooseWeapon(e.keyCode);
     }
   }
 }
@@ -352,8 +340,8 @@ function gunSelectBorder(gun) {
     w.imgEl.classList.remove("selected");
     w.imgEl.id = "";
   });
-  if(gun !== 'none'){
-  gun.imgEl.classList.add("selected");
+  if (gun !== "none") {
+    gun.imgEl.classList.add("selected");
   }
 }
 
@@ -627,8 +615,8 @@ function loseLife() {
 }
 
 function gameOver() {
-  inAttackMode = false
-  gunSelectBorder('none')
+  inAttackMode = false;
+  gunSelectBorder("none");
   mainEl.removeEventListener("mousedown", bulletLaunch);
   document.removeEventListener("keydown", spaceFire);
   clearInterval(newBats);
@@ -682,11 +670,22 @@ function toggleSound() {
   }
 }
 
-//////do things/////
+//////do things, get values/////
+function getBounds() {
+  main = mainEl.getBoundingClientRect();
+  bounds = {
+    right: main.right,
+    left: main.left,
+    top: main.top,
+    bottom: main.bottom,
+    width: main.width,
+    height: main.height,
+  };
+}
+
 function playAudio(audio) {
   if (sound) {
     audio.currentTime = 0;
-    // audio.volume = .2
     audio.play();
   }
 }
@@ -779,8 +778,6 @@ function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
 }
-
-
 
 //animate smaller version of gun moving to guy when selected, moves with him
 //update favicon to bat img
