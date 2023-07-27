@@ -5,7 +5,7 @@
 
 Bat Buster is a simple arcade style game. You are the town sheriff, tasked with protecting your town from a swarm of bats. Using your trusty revolver, shotgun, and state-issued granade launcher, shoot the bats down and reclaim your town! 
 
-Bat Buster also features a defense mode, where shooting is disabled and movement mechanics are brought to the forefront.
+Bat Buster also features a defense mode, where shooting is disabled and alternate movement mechanics are brought to the forefront.
 
 
 ## Gameplay: 
