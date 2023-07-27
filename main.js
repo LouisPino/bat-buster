@@ -155,7 +155,7 @@ class Bat {
       }
       if (
         onBorder(
-          batEls[q.id].getBoundingClientRect().x + batDim,
+          batEls[q.id].getBoundingClientRect().right,
           batEls[q.id].getBoundingClientRect().y
         ) === "right"
       ) {
