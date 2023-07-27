@@ -37,6 +37,7 @@ let score = 0;
 const powerTime = 10000; //Length of powerups
 let defense = false; //store whether or not we are in defense mode
 let sound = true; //store whether or not player wants sounds on
+let inAttackMode = false;
 
 ////guy
 let guyMoveId; //timer name for guyMove()
@@ -292,6 +293,7 @@ function initDefense() {
 }
 
 function initAttack() {
+  inAttackMode = true
   mainEl.addEventListener("mousedown", shotMarker);
   mainEl.addEventListener("mousedown", bulletLaunch);
   document.addEventListener("keydown", spaceFire);
@@ -331,7 +333,9 @@ function buttonPress(e) {
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
+    if(inAttackMode){
     chooseWeapon(e.keyCode);
+    }
   }
 }
 
@@ -348,7 +352,9 @@ function gunSelectBorder(gun) {
     w.imgEl.classList.remove("selected");
     w.imgEl.id = "";
   });
+  if(gun !== 'none'){
   gun.imgEl.classList.add("selected");
+  }
 }
 
 function gunFlash(gun) {
@@ -621,6 +627,8 @@ function loseLife() {
 }
 
 function gameOver() {
+  inAttackMode = false
+  gunSelectBorder('none')
   mainEl.removeEventListener("mousedown", bulletLaunch);
   document.removeEventListener("keydown", spaceFire);
   clearInterval(newBats);
