@@ -10,8 +10,7 @@ Bat Buster also features a defense mode, where shooting is disabled and alternat
 
 ## Gameplay: 
 
-![Screenshot 2023-07-25 at 2 50 30 PM](https://github.com/LouisPino/bat-buster/assets/130365689/632fde79-2c8d-4c22-ad02-3d615cc0ec66)
-
+![Screenshot 2023-07-27 at 1 50 23 PM](https://github.com/LouisPino/bat-buster/assets/130365689/85b8ca5c-4d9e-4b58-8ade-595749066feb)
 
 ### Getting Started: 
 #### [Click here to open the game in your browser](https://louispino.github.io/bat-buster/)
