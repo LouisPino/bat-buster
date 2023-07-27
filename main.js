@@ -778,6 +778,3 @@ function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
 }
-
-//animate smaller version of gun moving to guy when selected, moves with him
-//update favicon to bat img
