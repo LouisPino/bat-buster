@@ -1,4 +1,5 @@
-#Evaluation Template 
+# Pino's Project 1 Evaluation
+
 
 ## Functionality ( 4 / 4 )
 Render a game in the browser; includes separate HTML, CSS & JavaScript files
