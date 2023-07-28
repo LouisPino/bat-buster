@@ -38,6 +38,8 @@ const powerTime = 10000; //Length of powerups
 let defense = false; //store whether or not we are in defense mode
 let sound = true; //store whether or not player wants sounds on
 let inAttackMode = false;
+let hiScoreDefense
+let hiScoreAttack
 
 ////guy
 let guyMoveId; //timer name for guyMove()
@@ -635,10 +637,17 @@ function gameOver() {
   renderLives();
   guyEl.style.display = "none";
   modalTitleEl.innerHTML = "Tarnation!";
-  modalPEl.innerHTML =
-    "The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.<br> <br> <br><h2>Play Again?</h2> ";
-  modalPEl.style.textAlign = "center";
   mainEl.appendChild(modalEl);
+  if(defense){
+    setHiScoreDefense()
+    modalPEl.innerHTML =
+      `The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.<br><br><h2>High Score: ${hiScoreDefense}<h2><br><br><h2>Play Again?</h2> `;
+    }else{
+      setHiScoreAttack()
+      modalPEl.innerHTML =
+      `The bats proved to be a formidable challenge, and the town's hope has dimmed in their relentless onslaught. Your valiant efforts were not in vain, but for now, darkness reigns over the Wild West. The townsfolk are counting on you to rise again and claim victory over these winged foes.<br><br><h2>High Score: ${hiScoreAttack}<h2><br><br><h2>Play Again?</h2> `;
+    }
+    modalPEl.style.textAlign = "center";
 }
 
 function decHealth(e) {
@@ -669,6 +678,36 @@ function toggleSound() {
   } else {
     soundIconEl.src = "assets/sound.png";
     sound = true;
+  }
+}
+
+function getHiScoreDefense(){
+  if(window.localStorage.getItem('hiScoreDefense')){
+  hiScoreDefense = window.localStorage.getItem('hiScoreDefense')
+  }else{
+    window.localStorage.setItem('hiScoreDefense', 0)
+    hiScoreDefense = 0
+  }
+}
+function getHiScoreAttack(){
+  if(window.localStorage.getItem('hiScoreAttack')){
+  hiScoreAttack = window.localStorage.getItem('hiScoreAttack')
+  }else{
+    window.localStorage.setItem('hiScoreAttack', 0)
+    hiScoreAttack = 0
+  }
+}
+
+function setHiScoreDefense(){
+  if(score > hiScoreDefense){
+    hiScoreDefense = score
+    window.localStorage.setItem('hiScoreDefense', hiScoreDefense)
+  }
+}
+function setHiScoreAttack(){
+  if(score > hiScoreAttack){
+    hiScoreAttack = score
+    window.localStorage.setItem('hiScoreAttack', hiScoreAttack)
   }
 }
 
@@ -784,10 +823,9 @@ function storeMouse(e) {
 
 // bats glitch when hitting exact corner in top left    ....   idk
 
-// cache and display hi-score
-//window.localStorage.setItem('hiScore', 100)
-//let hiScore = window.localStorage.getItem('hiScore')
-
-
-
 // add timer for power ups
+
+
+//getHiScores when game loads
+getHiScoreDefense()
+getHiScoreAttack()
