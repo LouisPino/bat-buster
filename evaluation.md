@@ -40,6 +40,7 @@ Pseudo-code
 ## Glows
 - I think I did well with time management. I started Friday night and tried to frontload the work as much as possible. This gave me a lot of time to fine tune all of the problems that didn't completely break the game, and also allowed me to spend most of the week on stretch goals. I think the key to this was accepting that I will not come up with the answer if I've already tried to for ~20 minutes. Walking away from problems like this is something I usually have trouble doing and end up wasting a lot of time. 
 <br>
+
 - I have a tendency to leave features as they are once they just barely cross the threshold of passable. A lot of features (mostly in regards to placement/motion of things) were really buggy to the point where they were obviously glitching out, but didn't ruin the game. I eventually ironed out all of these issues once the game reached an acceptable MVP, where in the past on projects like this I would usually just be too lazy to find a solution.
 <br>
 
@@ -48,4 +49,7 @@ Pseudo-code
 
 ## Shoutouts
 - Shoutout Josh for the MVC lecture!!!! I absolutely would not have intuitively created this game that way, and it would have gotten way too big way too fast if I hadn't. I can't imagine trying to deal with all the bugs I had to deal with if everything wasn't laid out like that.
+
+<br>
+
 - Also just general appreciation for Rose and Brian, it has been great working with you both and I appreciate the positive attitude you all bring to this class!!!
