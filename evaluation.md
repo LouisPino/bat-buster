@@ -42,6 +42,7 @@ Pseudo-code
 <br>
 - I have a tendency to leave features as they are once they just barely cross the threshold of passable. A lot of features (mostly in regards to placement/motion of things) were really buggy to the point where they were obviously glitching out, but didn't ruin the game. I eventually ironed out all of these issues once the game reached an acceptable MVP, where in the past on projects like this I would usually just be too lazy to find a solution.
 <br>
+
 ## Grows 
 - My JS planning was basically nonexistent. I tried to stay very organized while writing all the code, but still ran into a lot of necessary refactoring because I just started bashing at the keyboard rather than thinking first. The need for immediate small successes drove this pattern, so on the next project I need to take more time at the very beginning to plan ahead better. This idea of planning needs to be integrated into my whole process so that even when I decide to add a new feature it gets implemented in a clean and thoughtful manner. I think I got very lucky with how things played out and it could have been a lot more stressful if I happened to start out with different data structures or keep track of elements another way.
 
