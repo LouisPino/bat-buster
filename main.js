@@ -318,6 +318,7 @@ function initAttack() {
 
 //////weapons//////
 function buttonPress(e) {
+  e.preventDefault()
   let key1 = e.keyCode >= 48 && e.keyCode <= 57;
   let key2 = e.keyCode >= 96 && e.keyCode <= 105;
   if (key1 || key2) {
@@ -493,13 +494,14 @@ function getGuyBounds() {
 function onBorder(x, y) {
   if (x < bounds.left) {
     return "left";
-  } else if (y < bounds.top) {
+  } if (y < bounds.top) {
     return "top";
-  } else if (x > bounds.right) {
+  } if (x > bounds.right) {
     return "right";
-  } else if (y > bounds.bottom) {
+  } if (y > bounds.bottom) {
     return "bottom";
-  } else return false;
+  } 
+  //else return false;
 }
 
 function topBottom() {
@@ -692,8 +694,8 @@ function playAudio(audio) {
 
 function randomInX() {
   return Math.floor(
-    Math.random() * (mainEl.getBoundingClientRect().width * 0.9) +
-      mainEl.getBoundingClientRect().width * 0.05
+    Math.random() * (mainEl.getBoundingClientRect().width - batDim*3) +
+      batDim
   );
 }
 
@@ -778,3 +780,14 @@ function storeMouse(e) {
   mousePos[0] = e.clientX;
   mousePos[1] = e.clientY;
 }
+
+
+// bats glitch when hitting exact corner in top left    ....   idk
+
+// cache and display hi-score
+//window.localStorage.setItem('hiScore', 100)
+//let hiScore = window.localStorage.getItem('hiScore')
+
+
+
+// add timer for power ups
