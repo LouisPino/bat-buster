@@ -8,15 +8,12 @@
   font-family: "Press Start 2P", cursive;
 }
 
-*::selection {
-  background-color: transparent;
-}
 body {
   height: 100vh;
   display: grid;
   grid-template-rows: 120px 8fr 75px;
   grid-template-columns: 1fr 5fr 1fr;
-  background: url("https://www.americanpac.com/images/rustic_panels/swamp-cypress/swampland-cypress-wood-wall-paneling.jpg");
+  background: url("/assets/wood.webp");
   background-color: rgba(0, 0, 0, 0.3);
   background-blend-mode: multiply;
   background-size: 10% 100%;
