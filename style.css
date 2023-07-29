@@ -13,7 +13,7 @@ body {
   display: grid;
   grid-template-rows: 120px 8fr 75px;
   grid-template-columns: 1fr 5fr 1fr;
-  background: url("/assets/woodPanel.webp");
+  background: url("./assets/woodPanel.webp");
   background-color: rgba(0, 0, 0, 0.3);
   background-blend-mode: multiply;
   background-size: 10% 100%;
